@@ -56,7 +56,7 @@ AppConfig.userInfo = UserInfo("new_user")
 
 ### demo
 
-![](screenshot/Screenshot.jpg)
+<img src="screenshot/Screenshot.jpg" style="max-width:100%;width: 300px;" />
 
 ### 更多
 
