@@ -113,6 +113,7 @@ class SmartKey<T>(
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T> Settings.get(key: String, defaultValue: T, cls: Class<*>? = null): T {
     if (key !in this) return defaultValue
 
