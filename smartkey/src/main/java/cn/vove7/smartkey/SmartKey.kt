@@ -43,7 +43,6 @@ class SmartKey<T>(
 
     private lateinit var configName: String
 
-
     private fun intiConfigName(thisRef: Any?) {
         if (!init) {
             configName = if (thisRef == null) defaultName
@@ -159,24 +158,24 @@ class SmartKey<T>(
 fun <T> Settings.get(key: String, defaultValue: T, cls: Class<*>? = null): T {
     if (key !in this) return defaultValue
 
-    return when (defaultValue) {
-        is Int -> {
-            getInt(key, defaultValue) as T
+    return when (defaultValue) {//此时数据已存入
+        is Int? -> {
+            getInt(key, defaultValue ?: -1) as T
         }
-        is Long -> {
-            getLong(key, defaultValue) as T
+        is Long? -> {
+            getLong(key, defaultValue ?: -1L) as T
         }
-        is String -> {
-            getString(key, defaultValue) as T
+        is String? -> {
+            getString(key, defaultValue ?: "") as T
         }
-        is Float -> {
-            getFloat(key, defaultValue) as T
+        is Float? -> {
+            getFloat(key, defaultValue ?: 0f) as T
         }
-        is Double -> {
-            getDouble(key, defaultValue) as T
+        is Double? -> {
+            getDouble(key, defaultValue ?: 0.0) as T
         }
-        is Boolean -> {
-            getBoolean(key, defaultValue) as T
+        is Boolean? -> {
+            getBoolean(key, defaultValue ?: false) as T
         }
         else -> {//gson
             if (key in this && cls != null) {
