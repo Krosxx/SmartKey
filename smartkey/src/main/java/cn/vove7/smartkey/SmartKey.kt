@@ -9,6 +9,8 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
 import com.russhwolf.settings.minusAssign
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.internal.ReflectionFactoryImpl
 
 /**
  * # SmartKey
@@ -40,29 +42,45 @@ class SmartKey<T>(
             context.getString(keyId)
         } else null
 
+    private lateinit var configName: String
+
+
+    private fun intiConfigName(thisRef: Any?) {
+        if (!init) {
+            configName = if (thisRef == null) defaultName
+            else ReflectionFactoryImpl().createKotlinClass(thisRef::class.java)
+                    .findAnnotation<Config>()?.let {
+                        if (it.name.isEmpty()) defaultName
+                        else it.name
+                    } ?: defaultName
+            Vog.d("初始化配置文件名：$configName")
+        }
+    }
+
+
     private var value: T? = defaultValue
 
     private var init = false
 
     operator fun getValue(thisRef: Any?, p: KProperty<*>): T {
+        intiConfigName(thisRef)
         val k = key ?: p.name
         if (!init) {
-            value = get(k, defaultValue)
+            value = getSettings(configName).get(k, defaultValue, cls)
             Vog.d("初始化值：$k : $value")
         }
+        init = true
         return value ?: defaultValue
     }
 
-    open fun get(k: String, defaultValue: T): T {
-        return settings.get(k, defaultValue, cls)
-    }
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, t: T) {
+        intiConfigName(thisRef)
         init = true
         val k = key ?: property.name
         Vog.d("设置值：$k = $t")
         value = t
-        settings.set(k, t)
+        getSettings(configName).set(k, t)
     }
 
     companion object {
@@ -74,10 +92,17 @@ class SmartKey<T>(
             this.context = context
         }
 
-        private fun s(@StringRes id: Int): String = context.getString(id)
+        private val defaultName by lazy {
+            context.packageName
+        }
 
-        val settings: Settings
-                by lazy { PlatformSettings.Factory(SmartKey.context).create("___") }
+        private val cache = mutableMapOf<String, Settings>()
+
+        fun getSettings(name: String = defaultName): Settings {
+            return cache.getOrPut(name) { PlatformSettings.Factory(SmartKey.context).create(name) }
+        }
+
+        private fun s(@StringRes id: Int): String = context.getString(id)
 
         /**
          * 具体化泛型类型
@@ -95,21 +120,39 @@ class SmartKey<T>(
             return SmartKey(defaultValue, T::class.java, encrypt, key, keyId)
         }
 
-        fun <T> set(key: String, value: T?) {
-            settings.set(key, value)
+        operator fun <T> set(key: String, value: T?) {
+            getSettings().set(key, value)
         }
 
-        fun <T> set(@StringRes keyId: Int, value: T?) {
-            settings.set(s(keyId), value)
+        operator fun <T> set(@StringRes keyId: Int, value: T?) {
+            getSettings().set(s(keyId), value)
         }
 
-        inline fun <reified T> get(key: String, defaultValue: T): T {
-            return settings.get(key, defaultValue, cls = T::class.java)
+        inline operator fun <reified T> get(key: String, defaultValue: T): T {
+            return getSettings().get(key, defaultValue, cls = T::class.java)
         }
 
-        inline fun <reified T> get(@StringRes keyId: Int, defaultValue: T): T? {
-            return settings.get(context.getString(keyId), defaultValue, cls = T::class.java)
+        inline operator fun <reified T> get(@StringRes keyId: Int, defaultValue: T): T? {
+            return getSettings().get(context.getString(keyId), defaultValue, cls = T::class.java)
         }
+
+
+        operator fun set(configName: String, k: String, v: Any) {
+            getSettings(configName).set(k, v)
+        }
+
+        inline operator fun <reified T> get(configName: String, key: String, defaultValue: T): T? {
+            return getSettings(configName).get(key, defaultValue)
+        }
+
+        operator fun set(configName: String, kId: Int, v: Any) {
+            getSettings(configName).set(s(kId), v)
+        }
+
+        inline operator fun <reified T> get(configName: String, kid: Int, defaultValue: T): T? {
+            return getSettings(configName).get(context.getString(kid), defaultValue)
+        }
+
     }
 }
 

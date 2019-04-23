@@ -1,5 +1,6 @@
 package cn.vove7.smartkey.demo
 
+import cn.vove7.smartkey.Config
 import cn.vove7.smartkey.R
 import cn.vove7.smartkey.SmartKey
 
@@ -9,6 +10,7 @@ import cn.vove7.smartkey.SmartKey
  * @author 11324
  * 2019/4/21
  */
+@Config("app")
 object AppConfig {
 
     /**

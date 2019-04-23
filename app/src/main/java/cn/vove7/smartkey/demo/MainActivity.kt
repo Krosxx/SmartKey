@@ -25,12 +25,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         SmartKey.init(this)
+        Vog.init(0)//输出日志
+        Vog.addListener(lis)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        /**
+         * 测试 set get
+         */
+        SmartKey["app2", "key"] = 1
+        val s = SmartKey["app2", "text", "de"]//config, key, default
+        Vog.d("app2[text] : $s")
 
-        Vog.init(0)//输出日志
-        Vog.addListener(lis)
+        SmartKey["text"] = "234"
+
+        val t = SmartKey[R.string.key_text, "d_s"]//key, default
+        Vog.d("默认配置[text]:$t")
+
 
         //number_picker
         number_picker.apply {

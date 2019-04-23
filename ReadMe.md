@@ -16,6 +16,8 @@ SmartKet.init(context)
 
 1. 定义配置类：
 ```kotlin
+//这里可以注解配置存储文件名，多个配置类可分文件存储
+@Config("app_config")
 object AppConfig {
 
     /**
@@ -79,10 +81,19 @@ AppConfig.userInfo = UserInfo("new_user")
 - 使用`SmartKey`直接操作key和value
 
 ```kotlin
-SmartKey.set("text", "aaa")
-SmartKey.get("number", -1)
+//使用默认存储文件存取
+SmartKey["text"] = "aaa" 
+val n = SmartKey["number", -1] //key, defaultValue
+
+//指定配置文件存取
+SmartKey["app2", "key"] = 1
+val s = SmartKey["app2", "text", "de"]//configName, key, defaultValue
+
 
 ```
+
+另外，key可使用StringRes 来代替 `val t = SmartKey[R.string.key_text, "default"]`
+
 
 ### 引入SmartKey
 
@@ -101,7 +112,7 @@ dependencies {
 	implementation "com.github.Vove7:SmartKey:$lastest_version"
 }
 ```
-> [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
+> lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
 
 ### TODO
 
