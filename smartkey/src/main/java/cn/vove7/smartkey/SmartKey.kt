@@ -117,6 +117,7 @@ class SmartKey<T> constructor(
          * @param keyId Int?
          * @return SmartKey<T>
          */
+        @SuppressLint("StaticFieldLeak")
         inline fun <reified T> auto(
                 defaultValue: T,
                 encrypt: Boolean = false,

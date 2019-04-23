@@ -32,6 +32,11 @@ object AppConfig {
     var intArr: Array<Int> by SmartKey.auto(emptyArray())
 
     var userInfo: UserInfo? by SmartKey.auto(null)
+    
+    /**
+     * 可空基础类型使用：SmartKey.auto
+     */
+    var nullableInt: Int? by SmartKey.auto(null)
 
 }
 

@@ -1,9 +1,9 @@
 package cn.vove7.smartkey.demo
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.appcompat.app.AppCompatActivity
 import cn.vove7.smartkey.PrintListener
 import cn.vove7.smartkey.R
 import cn.vove7.smartkey.SmartKey
@@ -31,6 +31,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Vog.d("nullableInt: " + AppConfig.nullableInt)
+        AppConfig.nullableInt = 9
+        Vog.d("nullableInt: " + AppConfig.nullableInt)
         /**
          * 测试 set get
          */

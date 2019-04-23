@@ -1,5 +1,6 @@
 package cn.vove7.smartkey.demo
 
+import android.annotation.SuppressLint
 import cn.vove7.smartkey.Config
 import cn.vove7.smartkey.R
 import cn.vove7.smartkey.SmartKey
@@ -10,6 +11,7 @@ import cn.vove7.smartkey.SmartKey
  * @author 11324
  * 2019/4/21
  */
+@SuppressLint("StaticFieldLeak")
 @Config("app")
 object AppConfig {
 
@@ -26,6 +28,10 @@ object AppConfig {
     var intArr: Array<Int> by SmartKey.auto(emptyArray())
     var userInfo: UserInfo? by SmartKey.auto(null, encrypt = true)
 
+    /**
+     * 可空基础类型使用：SmartKey.auto
+     */
+    var nullableInt: Int? by SmartKey.auto(null)
 }
 
 data class UserInfo(
