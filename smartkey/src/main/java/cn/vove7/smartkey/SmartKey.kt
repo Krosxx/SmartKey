@@ -7,6 +7,7 @@ import com.russhwolf.settings.PlatformSettings
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
 import com.russhwolf.settings.minusAssign
+import java.lang.Exception
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.internal.ReflectionFactoryImpl
@@ -33,6 +34,12 @@ class SmartKey<T> constructor(
         key: String? = null,
         keyId: Int? = null
 ) {
+    init {
+        //检查 可空基本类型
+        if (defaultValue == null && cls == null) {
+            throw Exception("可空基本类型，请使用：by SmartKey.auto()")
+        }
+    }
     /**
      * 指定key
      */
