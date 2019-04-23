@@ -87,12 +87,14 @@ val n = SmartKey["number", -1] //key, defaultValue
 
 //指定配置文件存取
 SmartKey["app2", "key"] = 1
-val s = SmartKey["app2", "text", "de"]//configName, key, defaultValue
+val s = SmartKey["app2", "text", "default"]//configName, key, defaultValue
+
+//另外，key可使用StringRes 来代替 
+val t = SmartKey[R.string.key_of_text, "default"]
 
 
 ```
 
-另外，key可使用StringRes 来代替 `val t = SmartKey[R.string.key_text, "default"]`
 
 
 ### 引入SmartKey
@@ -100,16 +102,16 @@ val s = SmartKey["app2", "text", "de"]//configName, key, defaultValue
 ###### Step 1. Add it in your root build.gradle at the end of repositories:
 ```groovy
 allprojects {
-	repositories {
-		//...
-		maven { url 'https://jitpack.io' }
-	}
+    repositories {
+        //...
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 ###### Step 2. Add the dependency
 ```groovy
 dependencies {
-	implementation "com.github.Vove7:SmartKey:$lastest_version"
+    implementation "com.github.Vove7:SmartKey:$lastest_version"
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
