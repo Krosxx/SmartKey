@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.internal.ReflectionFactoryImpl
  * @author 11324
  * 2019/4/22
  */
-class SmartKey<T>(
+class SmartKey<T> constructor(
         private val defaultValue: T,
         /**
          * 指定泛型class @see[auto]
@@ -159,30 +159,53 @@ fun <T> Settings.get(key: String, defaultValue: T, cls: Class<*>? = null): T {
     if (key !in this) return defaultValue
 
     return when (defaultValue) {//此时数据已存入
-        is Int? -> {
-            getInt(key, defaultValue ?: -1) as T
+        is Int -> {
+            getInt(key, defaultValue) as T
         }
-        is Long? -> {
-            getLong(key, defaultValue ?: -1L) as T
+        is Long -> {
+            getLong(key, defaultValue) as T
         }
-        is String? -> {
-            getString(key, defaultValue ?: "") as T
+        is String -> {
+            getString(key, defaultValue) as T
         }
-        is Float? -> {
-            getFloat(key, defaultValue ?: 0f) as T
+        is Float -> {
+            getFloat(key, defaultValue) as T
         }
-        is Double? -> {
-            getDouble(key, defaultValue ?: 0.0) as T
+        is Double -> {
+            getDouble(key, defaultValue) as T
         }
-        is Boolean? -> {
-            getBoolean(key, defaultValue ?: false) as T
+        is Boolean -> {
+            getBoolean(key, defaultValue) as T
         }
         else -> {//gson
-            if (key in this && cls != null) {
-                GsonHelper.fromJson(
-                        getString(key, defaultValue.toJson()), cls
-                ) ?: defaultValue
-            } else defaultValue
+            when (cls) {//可空类型使用 SmartKey.auto()
+                Int::class.java -> {
+                    getInt(key, (defaultValue as Int?) ?: 0) as T
+                }
+                Long::class.java -> {
+                    getLong(key, (defaultValue as Long?) ?: 0L) as T
+                }
+                String::class.java -> {
+                    getString(key, (defaultValue as String?) ?: "") as T
+                }
+                Float::class.java -> {
+                    getFloat(key, (defaultValue as Float?) ?: 0f) as T
+                }
+                Double::class.java -> {
+                    getDouble(key, (defaultValue as Double?) ?: 0.0) as T
+                }
+                Boolean::class.java -> {
+                    getBoolean(key, (defaultValue as Boolean?) ?: false) as T
+                }
+                else -> {
+                    if (key in this && cls != null) {
+                        GsonHelper.fromJson(
+                                getString(key, defaultValue.toJson()), cls
+                        ) ?: defaultValue
+                    } else defaultValue
+                }
+            }
+
         }
     }
 }

@@ -116,6 +116,15 @@ dependencies {
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
 
+
+### 注意
+
+使用可空基本类型，需使用SmartKey.auto
+```kotlin
+    var last by SmartKey.auto<Long?>(null)
+
+```
+
 ### TODO
 
 - 完成加密
