@@ -2,7 +2,6 @@ package cn.vove7.smartkey
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.annotation.StringRes
 import cn.vove7.smartkey.SmartKey.Companion.auto
 import com.russhwolf.settings.PlatformSettings
 import com.russhwolf.settings.Settings
@@ -32,7 +31,7 @@ class SmartKey<T>(
          * 自定义key
          */
         key: String? = null,
-        @StringRes keyId: Int? = null
+        keyId: Int? = null
 ) {
     /**
      * 指定key
@@ -102,7 +101,7 @@ class SmartKey<T>(
             return cache.getOrPut(name) { PlatformSettings.Factory(SmartKey.context).create(name) }
         }
 
-        private fun s(@StringRes id: Int): String = context.getString(id)
+        private fun s(id: Int): String = context.getString(id)
 
         /**
          * 具体化泛型类型
@@ -124,7 +123,7 @@ class SmartKey<T>(
             getSettings().set(key, value)
         }
 
-        operator fun <T> set(@StringRes keyId: Int, value: T?) {
+        operator fun <T> set(keyId: Int, value: T?) {
             getSettings().set(s(keyId), value)
         }
 
@@ -132,7 +131,7 @@ class SmartKey<T>(
             return getSettings().get(key, defaultValue, cls = T::class.java)
         }
 
-        inline operator fun <reified T> get(@StringRes keyId: Int, defaultValue: T): T? {
+        inline operator fun <reified T> get(keyId: Int, defaultValue: T): T? {
             return getSettings().get(context.getString(keyId), defaultValue, cls = T::class.java)
         }
 
