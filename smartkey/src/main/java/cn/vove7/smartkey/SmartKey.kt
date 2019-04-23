@@ -185,23 +185,23 @@ fun <T> Settings.get(key: String, defaultValue: T, cls: Class<*>? = null): T {
             getBoolean(key, defaultValue) as T
         }
         else -> {//gson
-            when (cls) {//可空类型使用 SmartKey.auto()
-                Int::class.java -> {
+            when (cls?.simpleName) {//可空类型使用 SmartKey.auto()
+                "Int" -> {
                     getInt(key, (defaultValue as Int?) ?: 0) as T
                 }
-                Long::class.java -> {
+                "Long" -> {
                     getLong(key, (defaultValue as Long?) ?: 0L) as T
                 }
-                String::class.java -> {
+                "String" -> {
                     getString(key, (defaultValue as String?) ?: "") as T
                 }
-                Float::class.java -> {
+                "Float" -> {
                     getFloat(key, (defaultValue as Float?) ?: 0f) as T
                 }
-                Double::class.java -> {
+                "Double" -> {
                     getDouble(key, (defaultValue as Double?) ?: 0.0) as T
                 }
-                Boolean::class.java -> {
+                "Boolean" -> {
                     getBoolean(key, (defaultValue as Boolean?) ?: false) as T
                 }
                 else -> {
