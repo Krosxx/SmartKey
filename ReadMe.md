@@ -11,7 +11,7 @@
 0. 在Application中初始化：
 
 ```kotlin
-SmartKet.init(context)
+SmartKey.init(context)
 ```
 
 1. 定义配置类：
