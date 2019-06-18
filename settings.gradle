@@ -1,1 +1,1 @@
-include ':app', ':smartkey'
+include ':app', ':smartkey-android', ':smartkey'

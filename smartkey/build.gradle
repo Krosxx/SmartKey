@@ -1,38 +1,16 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.Vove7'
-
-android {
-    compileSdkVersion 28
-
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-
-    }
-
-}
-
 dependencies {
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api "com.russhwolf:multiplatform-settings-android:0.2"
-
-    api 'com.google.code.gson:gson:2.8.5'
+//    api fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
     api "org.jetbrains.kotlin:kotlin-reflect:1.3.30"
+    api 'com.google.code.gson:gson:2.8.5'
 
 }
 
-repositories {
-    google()
-    jcenter()
-    maven { url = 'https://dl.bintray.com/russhwolf/multiplatform-settings' }
+sourceCompatibility = "8"
+targetCompatibility = "8"
 
-}

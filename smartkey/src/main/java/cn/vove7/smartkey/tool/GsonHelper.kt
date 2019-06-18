@@ -1,4 +1,4 @@
-package cn.vove7.smartkey
+package cn.vove7.smartkey.tool
 
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes

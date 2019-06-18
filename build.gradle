@@ -3,9 +3,12 @@
 buildscript {
     ext.kotlin_version = '1.3.21'
     repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+
         google()
         jcenter()
-        
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
@@ -19,12 +22,12 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
-        jcenter()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         maven { url 'https://jitpack.io' }
 
-        maven { url = 'https://dl.bintray.com/russhwolf/multiplatform-settings' }
-        
+        google()
+        jcenter()
     }
 }
 

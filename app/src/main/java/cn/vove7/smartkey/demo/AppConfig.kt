@@ -1,9 +1,9 @@
 package cn.vove7.smartkey.demo
 
-import android.annotation.SuppressLint
-import cn.vove7.smartkey.Config
+import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.R
-import cn.vove7.smartkey.SmartKey
+import cn.vove7.smartkey.android.smartKey
+import cn.vove7.smartkey.annotation.Config
 
 /**
  * # AppConfig
@@ -11,27 +11,23 @@ import cn.vove7.smartkey.SmartKey
  * @author 11324
  * 2019/4/21
  */
-@SuppressLint("StaticFieldLeak")
 @Config("app")
-object AppConfig {
+object AppConfig : BaseConfig {
 
     /**
      * 基本类型存储
      */
-    var text: String by SmartKey("a", keyId = R.string.key_text)
+    var text: String by smartKey("a", keyId = R.string.key_text)
 
-    var number: Int  by SmartKey(50)
+    var number: Int  by smartKey(50)
 
-    /**
-     * 其他类型使用：[SmartKey.auto]
-     */
-    var intArr: Array<Int> by SmartKey.auto(emptyArray())
-    var userInfo: UserInfo? by SmartKey.auto(null, encrypt = true)
+    var intArr: Array<Int> by smartKey(emptyArray())
+    var userInfo: UserInfo? by smartKey(null, encrypt = true)
 
     /**
-     * 可空基础类型使用：SmartKey.auto
+     * 实体类
      */
-    var nullableInt: Int? by SmartKey.auto(null)
+    var nullableInt: Int? by smartKey(null)
 }
 
 data class UserInfo(

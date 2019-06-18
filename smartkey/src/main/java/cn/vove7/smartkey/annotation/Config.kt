@@ -1,4 +1,4 @@
-package cn.vove7.smartkey
+package cn.vove7.smartkey.annotation
 
 /**
  * # Config

@@ -1,10 +1,5 @@
-package cn.vove7.smartkey
+package cn.vove7.smartkey.tool
 
-import android.content.Context
-import android.util.Log
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * #Vog
@@ -13,7 +8,7 @@ import java.util.*
 typealias PrintListener = (String) -> Unit
 
 object Vog {
-    private var output_level = Log.VERBOSE
+    private var output_level = 0
 
     /**
      * @param outputLevel Log.***
@@ -24,31 +19,31 @@ object Vog {
     }
 
     fun d(msg: Any?) {
-        println(Log.DEBUG, msg.toString())
+        println(1, msg.toString())
     }
 
     fun wtf(msg: Any?) {
-        println(Log.ERROR, msg.toString())
+        println(5, msg.toString())
     }
 
     fun v(msg: Any) {
-        println(Log.VERBOSE, msg.toString())
+        println(0, msg.toString())
     }
 
     fun i(msg: Any) {
-        println(Log.INFO, msg.toString())
+        println(2, msg.toString())
     }
 
     fun w(msg: Any) {
-        println(Log.WARN, msg.toString())
+        println(3, msg.toString())
     }
 
     fun e(msg: Any) {
-        println(Log.ERROR, msg.toString())
+        println(4, msg.toString())
     }
 
     fun a(msg: Any) {
-        println(Log.ASSERT, msg.toString())
+        println(6, msg.toString())
     }
 
     const val TAG = "VOG"
@@ -80,14 +75,7 @@ object Vog {
             (it.methodName + "(" + it.fileName +
                     ":" + it.lineNumber + ")")
         }
-        try {
-            Log.println(priority, TAG, "$pre  >> $msg\n")
-        } catch (e: Exception) {
-            when (priority) {
-                Log.ERROR -> System.err.println("$pre  >> $msg")
-                else -> println("$pre  >> $msg")
-            }
-        }
+        println("$pre  >> $msg")
     }
 
     private fun findCaller(upDepth: Int): StackTraceElement? {
