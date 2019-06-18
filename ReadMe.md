@@ -2,6 +2,11 @@
 
 # SmartKey
 
+- [基本使用](#基本使用)
+- [更多操作](#更多操作)
+- [引入SmartKey](#引入SmartKey)
+- 
+
 > 利用Kotlin委托实现优雅地持久化存储应用配置。
 
 - 支持纯Kotlin项目
@@ -10,18 +15,21 @@
 
 ### 基本使用
 
-#### Kotlin项目
+#### 初始化
 
-1. 
+- Kotlin项目
 
-#### Android项目
-0. 在Application中初始化：
+无需多余操作
+
+- Android项目
+
+在Application中初始化：
 
 ```kotlin
-SmartKey.init(context)
+AndroidSettings.init(context)
 ```
 
-1. 定义配置类：
+1. 定义配置类
 ```kotlin
 //这里可以使用注解配置存储文件名，多个配置类可分文件存储
 @Config("app_config")
@@ -54,9 +62,7 @@ data class UserInfo(
 ```
 
 
-2. 使用
-
-此时你可以像这样使用：
+2. 此时你可以像这样使用
 
 ```kotlin
 //获取存储值
@@ -94,7 +100,7 @@ AppConfig.clear()
 
 <img src="screenshot/Screenshot.jpg" width= "300px" />
 
-### 更多
+### 更多操作
 
 - 你可以指定变量对应存储的key：
 ```kotlin
@@ -125,6 +131,23 @@ val s = SmartKey["app2", "text", "de"]//config, key, default
 
 ```
 
+### 自定义持久化实现
+
+1. 实现`com.russhwolf.settings.Settings`接口
+
+//注意必须存在构造函数(val configName:String)
+`class MySettingsImpl(val configName:String) : Settings`
+
+2. 设置实现类为MySettingsImpl
+- kotlin
+
+`SmartKey.settingImplCls = MySettingsImpl::class.java`
+
+- Android
+
+```kotlin
+AndroidSettings.init(context, MySettingsImpl::class.java)
+```
 
 ### 引入SmartKey
 
