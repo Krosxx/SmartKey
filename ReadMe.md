@@ -117,6 +117,13 @@ AppConfig.clear()
 
 - 使用`SmartKey`直接操作key和value
 
+```kotlin
+SmartKey["app2", "key"] = 1 //configName, key, value
+SmartKey["text"] = "234" //key, value
+
+val s = SmartKey["app2", "text", "de"]//config, key, default
+
+```
 
 
 ### 引入SmartKey

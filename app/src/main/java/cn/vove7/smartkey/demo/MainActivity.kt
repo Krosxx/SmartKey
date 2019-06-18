@@ -40,11 +40,11 @@ class MainActivity : AppCompatActivity() {
         /**
          * 测试 set get
          */
-        SmartKey["app2", "key"] = 1
+        SmartKey["app2", "key"] = 1 //configName, key, value
         val s = SmartKey["app2", "text", "de"]//config, key, default
         Vog.d("app2[text] : $s")
 
-        SmartKey["text"] = "234"
+        SmartKey["text"] = "234" //key, value
 
         //number_picker
         number_picker.apply {

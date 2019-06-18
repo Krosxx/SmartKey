@@ -7,6 +7,7 @@ package cn.vove7.smartkey.tool.encryptor
  * 2019/6/18
  */
 object AESEncryptor : Encryptor {
+    // TODO
     override fun encrypt(content: String): String {
         return content
     }
