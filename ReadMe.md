@@ -136,9 +136,11 @@ val s = SmartKey["app2", "text", "de"]//config, key, default
 
 1. 实现`com.russhwolf.settings.Settings`接口
 
-//注意必须存在构造函数(val configName:String)
-`class MySettingsImpl(val configName:String) : Settings`
+```kotlin
+//必须存在构造函数(val configName:String)
 
+class MySettingsImpl(val configName:String) : Settings
+``` 
 2. 设置实现类为MySettingsImpl
 - kotlin
 
@@ -163,9 +165,20 @@ allprojects {
 }
 ```
 ###### Step 2. Add the dependency
+
+- Kotlin
+
 ```groovy
 dependencies {
-    implementation "com.github.Vove7:SmartKey:$lastest_version"
+    implementation "com.github.Vove7.SmartKey:smartkey:$lastest_version"
+}
+```
+
+- Android
+ 
+```groovy
+dependencies {
+    implementation "com.github.Vove7.SmartKey:smartkey-android:$lastest_version"
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
