@@ -14,20 +14,18 @@ import cn.vove7.smartkey.annotation.Config
 @Config("app")
 object AppConfig : BaseConfig {
 
-    /**
-     * 基本类型存储
-     */
+    //基本类型存储
     var text: String by smartKey("a", keyId = R.string.key_text)
 
+    //可空基础类型
+    var nullableInt: Int? by smartKey(null)
     var number: Int  by smartKey(50)
 
+    //数组
     var intArr: Array<Int> by smartKey(emptyArray())
-    var userInfo: UserInfo? by smartKey(null, encrypt = true)
 
-    /**
-     * 实体类
-     */
-    var nullableInt: Int? by smartKey(null)
+    //实体类
+    var userInfo: UserInfo? by smartKey(null, encrypt = true)
 }
 
 data class UserInfo(

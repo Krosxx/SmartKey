@@ -4,9 +4,9 @@
 
 > 利用Kotlin委托实现优雅地持久化存储应用配置。
 
-- 支持纯Kotlin项目
-- 支持Android项目
-- 支持自定义持久化实现
+1. 支持纯Kotlin项目
+2. 支持Android项目
+3. 支持自定义持久化实现
 
 
 - [基本使用](#基本使用)
@@ -36,21 +36,18 @@ AndroidSettings.init(context)
 @Config("app_config")
 object AppConfig {
 
-    /**
-     * 基本类型存储
-     */
-    var text: String by smartKey("a", keyId = R.string.key_text)
+    //基本类型存储
+    var text: String by smartKey("a")
 
+    //可空基础类型
+    var nullableInt: Int? by smartKey(null)
     var number: Int  by smartKey(50)
 
-
+    //数组
     var intArr: Array<Int> by smartKey(emptyArray())
-    var userInfo: UserInfo? by smartKey(null, encrypt = true)
 
-    /**
-     * 可空基础类型使用：SmartKey.auto
-     */
-    var nullableInt: Int? by smartKey(null)
+    //实体类
+    var userInfo: UserInfo? by smartKey(null, encrypt = true)
 }
 
 //实体类
@@ -109,7 +106,7 @@ AppConfig.clear()
     //import cn.vove7.smartkey.smartKey
     var text: String by smartKey("defaultValue", key = "your_key")
     
-    //安卓项目可指定keyId
+    //安卓项目可通过resId指定keyId
     //import cn.vove7.smartkey.android.smartKey
     var textAndroid: String by smartKey("defaultValue", keyId = R.string.key)
 ```
