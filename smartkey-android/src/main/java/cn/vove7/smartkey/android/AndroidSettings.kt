@@ -2,11 +2,9 @@ package cn.vove7.smartkey.android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import cn.vove7.smartkey.SmartKey
 import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.android.AndroidSettings.Companion.context
-import cn.vove7.smartkey.get
-import cn.vove7.smartkey.set
+import cn.vove7.smartkey.key.*
 import com.russhwolf.settings.Settings
 
 /**
@@ -29,6 +27,15 @@ inline fun <reified T> smartKey(
     return SmartKey(defaultValue, T::class.java, encrypt, k)
 }
 
+inline fun <reified T> noCacheKey(
+        defaultValue: T,
+        encrypt: Boolean = false,
+        key: String? = null,
+        keyId: Int? = null): NoCacheKey<T> {
+    val k = key ?: keyId?.let { context.getString(it) }
+    return NoCacheKey(defaultValue, T::class.java, encrypt, k)
+}
+
 /**
  * # AndroidSettings
  *
@@ -47,7 +54,7 @@ class AndroidSettings(private val configName: String) : Settings by create(confi
          * @param settingImplCls Class<out Settings> 持久化存储实现类，默认为AndroidSettings
          */
         fun init(context: Context, settingImplCls: Class<out Settings> = AndroidSettings::class.java) {
-            SmartKey.settingImplCls = settingImplCls
+            IKey.settingImplCls = settingImplCls
             Vog.init(100)//不输出日志
             Companion.context = context
         }

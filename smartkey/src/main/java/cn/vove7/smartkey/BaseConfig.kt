@@ -1,6 +1,7 @@
 package cn.vove7.smartkey
 
 import cn.vove7.smartkey.annotation.Config
+import cn.vove7.smartkey.key.SmartKey
 import kotlin.reflect.full.findAnnotation
 
 /**

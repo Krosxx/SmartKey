@@ -13,4 +13,9 @@ dependencies {
 
 sourceCompatibility = "8"
 targetCompatibility = "8"
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+    }
+}
 

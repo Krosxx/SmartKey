@@ -1,5 +1,6 @@
 import cn.vove7.smartkey.BaseConfig
-import cn.vove7.smartkey.smartKey
+import cn.vove7.smartkey.key.smartKey
+import java.util.*
 
 /**
  * # RunConfig
@@ -24,6 +25,11 @@ object RunConfig : BaseConfig {
 }
 
 class Model {
-    var number = 1
-    var arr = arrayOf(1, 2, 3)
+    var number = Random().nextInt(100)
+    var arr = arrayOf(1, 2, number)
+
+    override fun toString(): String {
+        return "Model(number=$number, arr=${Arrays.toString(arr)})"
+    }
+
 }

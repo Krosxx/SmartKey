@@ -11,7 +11,7 @@ import java.io.File
  * @author Vove
  * 2019/6/18
  */
-class WindowsSettings(val configDir: String) : Settings {
+class FileSettings(val configDir: String) : Settings {
 
     init {
         File(configDir).apply {
@@ -53,7 +53,10 @@ class WindowsSettings(val configDir: String) : Settings {
         } ?: defaultValue
     }
 
-    override fun getString(key: String, defaultValue: String): String = File(configDir, key).readText()
+    override fun getString(key: String, defaultValue: String): String {
+        return File(configDir, key).getValue { it }
+            ?: defaultValue
+    }
 
 
     override fun hasKey(key: String): Boolean =
@@ -61,28 +64,45 @@ class WindowsSettings(val configDir: String) : Settings {
 
 
     override fun putBoolean(key: String, value: Boolean) {
-        File(configDir, key).writeText(value.toString())
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun putDouble(key: String, value: Double) {
-        File(configDir, key).writeText(value.toString())
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun putFloat(key: String, value: Float) {
-        File(configDir, key).writeText(value.toString())
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun putInt(key: String, value: Int) {
-        File(configDir, key).writeText(value.toString())
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun putLong(key: String, value: Long) {
-        File(configDir, key).writeText(value.toString())
-
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun putString(key: String, value: String) {
-        File(configDir, key).writeText(value)
+        File(configDir, key).apply {
+            if (!exists()) createNewFile()
+            writeText(value.toString())
+        }
     }
 
     override fun remove(key: String) {
