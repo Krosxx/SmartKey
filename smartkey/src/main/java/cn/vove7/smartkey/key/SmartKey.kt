@@ -2,6 +2,7 @@ package cn.vove7.smartkey.key
 
 import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
+import java.util.*
 import kotlin.reflect.KProperty
 
 
@@ -72,7 +73,7 @@ class SmartKey<T> constructor(
     companion object {
         val defaultConfigName = "config"
 
-        private val cache = mutableMapOf<String, Settings>()
+        private val cache = WeakHashMap<String, Settings>()
 
         //缓存cls -> configName
 //        private val configNameMap = mutableMapOf<Class<*>, String>()

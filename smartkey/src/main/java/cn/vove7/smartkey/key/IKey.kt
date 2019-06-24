@@ -24,6 +24,7 @@ abstract class IKey {
 
     var init: Boolean = false
 
+    @Synchronized
     fun initConfigName(thisRef: Any?) {
         if (!init) {
             configName = if (thisRef == null) SmartKey.defaultConfigName
