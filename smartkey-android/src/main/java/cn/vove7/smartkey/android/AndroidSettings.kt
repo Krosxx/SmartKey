@@ -2,9 +2,9 @@ package cn.vove7.smartkey.android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.android.AndroidSettings.Companion.context
 import cn.vove7.smartkey.key.*
+import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
 
 /**
@@ -27,6 +27,15 @@ inline fun <reified T> smartKey(
     return SmartKey(defaultValue, T::class.java, encrypt, k)
 }
 
+/**
+ * [NoCacheKey]
+ *
+ * @param defaultValue T
+ * @param encrypt Boolean
+ * @param key String?
+ * @param keyId Int?
+ * @return NoCacheKey<T>
+ */
 inline fun <reified T> noCacheKey(
         defaultValue: T,
         encrypt: Boolean = false,
@@ -63,6 +72,7 @@ class AndroidSettings(private val configName: String) : Settings by create(confi
         fun create(configName: String): Settings =
             AndroidSettingsImpl(context, configName)
 
+        fun s(keyId: Int) = context.getString(keyId)
     }
 
 }

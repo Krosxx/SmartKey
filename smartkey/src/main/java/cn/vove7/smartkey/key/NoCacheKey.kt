@@ -1,10 +1,7 @@
 package cn.vove7.smartkey.key
 
-import cn.vove7.smartkey.annotation.Config
-import cn.vove7.smartkey.key.IKey.Companion.getSettingsImpl
 import cn.vove7.smartkey.tool.Vog
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.findAnnotation
 
 
 inline fun <reified T> noCacheKey(
@@ -20,7 +17,7 @@ inline fun <reified T> noCacheKey(
  * @author Vove
  * 2019/6/19
  */
-class NoCacheKey<T>(
+open class NoCacheKey<T>(
         private val defaultValue: T,
 
         /**
