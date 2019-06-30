@@ -20,10 +20,10 @@ import com.russhwolf.settings.Settings
  */
 inline fun <reified T> smartKey(
         defaultValue: T,
-        encrypt: Boolean = false,
-        key: String? = null,
-        keyId: Int? = null): SmartKey<T> {
-    val k = key ?: keyId?.let { context.getString(it) }
+        keyId: Int? = null,
+        encrypt: Boolean = false
+): SmartKey<T> {
+    val k = keyId?.let { context.getString(it) }
     return SmartKey(defaultValue, T::class.java, encrypt, k)
 }
 
@@ -38,10 +38,10 @@ inline fun <reified T> smartKey(
  */
 inline fun <reified T> noCacheKey(
         defaultValue: T,
-        encrypt: Boolean = false,
-        key: String? = null,
-        keyId: Int? = null): NoCacheKey<T> {
-    val k = key ?: keyId?.let { context.getString(it) }
+        keyId: Int? = null,
+        encrypt: Boolean = false
+): NoCacheKey<T> {
+    val k = keyId?.let { context.getString(it) }
     return NoCacheKey(defaultValue, T::class.java, encrypt, k)
 }
 

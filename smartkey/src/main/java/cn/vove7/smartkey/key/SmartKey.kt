@@ -17,8 +17,9 @@ import kotlin.reflect.KProperty
  */
 inline fun <reified T> smartKey(
         defaultValue: T,
-        encrypt: Boolean = false,
-        key: String? = null): SmartKey<T> {
+        key: String? = null,
+        encrypt: Boolean = false
+): SmartKey<T> {
     return SmartKey(defaultValue, T::class.java, encrypt, key)
 }
 

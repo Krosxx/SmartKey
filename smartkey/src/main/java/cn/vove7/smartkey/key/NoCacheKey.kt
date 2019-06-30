@@ -6,8 +6,9 @@ import kotlin.reflect.KProperty
 
 inline fun <reified T> noCacheKey(
         defaultValue: T,
-        encrypt: Boolean = false,
-        key: String? = null): NoCacheKey<T> {
+        key: String? = null,
+        encrypt: Boolean = false
+): NoCacheKey<T> {
     return NoCacheKey(defaultValue, T::class.java, encrypt, key)
 }
 
