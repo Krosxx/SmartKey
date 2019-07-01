@@ -14,7 +14,7 @@ inline fun <reified T> noCacheKey(
 
 /**
  * # NoCacheKey
- * 无缓存
+ * 无缓存，可用于多进程
  * @author Vove
  * 2019/6/19
  */

@@ -129,6 +129,15 @@ val s = SmartKey["app2", "text", "de"]//config, key, default
 
 ```
 
+- 无缓存的NoCacheKey
+
+由于`SmartKey`会对value进行缓存，在多进程会存在问题。因此而生的`NoCacheKey`，保证读取的数据是实时的。
+使用和SmartKey基本一致。
+```kotlin
+    var text: String by noCacheKey("defaultValue", key = "your_key")
+```
+
+
 ### 自定义持久化实现
 
 1. 实现`com.russhwolf.settings.Settings`接口
@@ -184,6 +193,7 @@ dependencies {
 ### TODO
 
 - 完成加密
+- ExpirableKey
 
 
 ### Thanks

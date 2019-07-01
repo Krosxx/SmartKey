@@ -25,7 +25,8 @@ inline fun <reified T> smartKey(
 
 /**
  * # SmartKey
- *
+ * 由于值缓存，在多进程会存在问题
+ * 支持多进程可使用[NoCacheKey]
  * @author 11324
  * 2019/4/22
  */
