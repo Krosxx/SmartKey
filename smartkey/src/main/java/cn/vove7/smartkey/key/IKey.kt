@@ -90,7 +90,9 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Class<*>, encrypt: Bool
         }
         else -> {//数组, 实体类
             try {
-                val value = getString(key).let {
+                val value = getString(
+                        if (encrypt) AESEncryptor.encryptKey(key) else key
+                ).let {
                     if (encrypt) AESEncryptor.decrypt(it)
                     else it
                 }
@@ -133,7 +135,7 @@ fun <T> Settings.set(key: String, value: T?, encrypt: Boolean = false) {
                 if (encrypt) AESEncryptor.encrypt(it)
                 else it
             }
-            putString(key, content)
+            putString(if (encrypt) AESEncryptor.encryptKey(key) else key, content)
         }
     }
 }

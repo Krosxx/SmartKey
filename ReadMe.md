@@ -150,7 +150,7 @@ class MySettingsImpl(val configName:String) : Settings
 2. 设置实现类为MySettingsImpl
 - kotlin
 
-`SmartKey.settingImplCls = MySettingsImpl::class.java`
+`IKey.settingImplCls = MySettingsImpl::class.java`
 
 - Android
 
@@ -192,7 +192,6 @@ dependencies {
 
 ### TODO
 
-- 完成加密
 - ExpirableKey
 
 

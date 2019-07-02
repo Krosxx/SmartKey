@@ -19,9 +19,9 @@ object RunConfig : BaseConfig {
 
     var nullableNumber: Int? by smartKey(null)
 
-    var intArray: IntArray by smartKey(intArrayOf(1, 2))
+    var intArray: IntArray by smartKey(intArrayOf(1, 2), encrypt = true)
 
-    var model: Model? by smartKey(null)
+    var model: Model? by smartKey(null, encrypt = true)
 }
 
 class Model {

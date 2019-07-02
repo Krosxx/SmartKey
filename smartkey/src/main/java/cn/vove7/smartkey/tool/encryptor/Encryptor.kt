@@ -10,5 +10,11 @@ interface Encryptor {
 
     fun encrypt(content: String): String
 
+    fun encryptKey(key: String): String {
+        return encrypt(key)
+                .replace('\\', '-')
+                .replace('/', '-')
+    }
+
     fun decrypt(content: String): String
 }

@@ -20,7 +20,7 @@ class FileSettings(val configDir: String) : Settings {
     }
 
     override fun clear() {
-        File(configDir).listFiles().forEach { it.delete() }
+        File(configDir).listFiles()?.forEach { it.delete() }
     }
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
@@ -98,9 +98,14 @@ class FileSettings(val configDir: String) : Settings {
         }
     }
 
+    @Synchronized
     override fun putString(key: String, value: String) {
         File(configDir, key).apply {
-            if (!exists()) createNewFile()
+            try {
+                if (!exists()) createNewFile()
+            } catch (e: Exception) {
+                print(e.message + absolutePath)
+            }
             writeText(value.toString())
         }
     }

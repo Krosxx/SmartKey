@@ -1,15 +1,12 @@
+import cn.vove7.smartkey.key.IKey
+import cn.vove7.smartkey.settings.PropertiesSettings
 import cn.vove7.smartkey.tool.Vog
-import org.jetbrains.annotations.TestOnly
-import java.lang.Thread.sleep
 import java.util.*
-
-/**
- *
- */
-
 
 fun main() {
 
+
+    IKey.settingImplCls = PropertiesSettings::class.java
     val b = System.currentTimeMillis()
 
     Vog.init(100)
