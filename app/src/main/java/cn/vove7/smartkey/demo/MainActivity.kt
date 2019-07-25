@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
-import cn.vove7.smartkey.*
+import cn.vove7.smartkey.R
 import cn.vove7.smartkey.android.AndroidSettings
-import cn.vove7.smartkey.key.SmartKey
 import cn.vove7.smartkey.tool.PrintListener
 import cn.vove7.smartkey.tool.Vog
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         AndroidSettings.init(this)
         Vog.init(0)//输出日志
         Vog.addListener(lis)
@@ -41,11 +39,10 @@ class MainActivity : AppCompatActivity() {
         /**
          * 测试 set get
          */
-        SmartKey["app2", "key"] = 1 //configName, key, value
-        val s = SmartKey["app2", "text", "de"]//config, key, default
+        val s = AppConfig["text", "de"]//key, default
         Vog.d("app2[text] : $s")
 
-        SmartKey["text"] = "234" //key, value
+        AppConfig["text"] = "234" //key, value
 
         //number_picker
         number_picker.apply {

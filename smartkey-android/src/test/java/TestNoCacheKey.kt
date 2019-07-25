@@ -1,7 +1,6 @@
 import cn.vove7.smartkey.key.IKey
 import cn.vove7.smartkey.settings.PropertiesSettings
 import cn.vove7.smartkey.tool.Vog
-import java.lang.Thread.sleep
 import java.util.*
 
 /**
@@ -13,7 +12,7 @@ import java.util.*
 
 
 fun main() {
-    IKey.settingImplCls = PropertiesSettings::class.java
+    IKey.DEFAULT_SETTING_IMPL_CLS = PropertiesSettings::class
 
     Vog.init(100)
 

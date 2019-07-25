@@ -1,4 +1,5 @@
 import cn.vove7.smartkey.BaseConfig
+import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.key.smartKey
 import java.util.*
 
@@ -7,6 +8,7 @@ import java.util.*
  * Created by 11324.
  * Date: 2019/6/18
  */
+@Config
 object RunConfig : BaseConfig {
 
 

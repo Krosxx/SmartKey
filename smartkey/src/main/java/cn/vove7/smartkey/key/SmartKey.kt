@@ -1,5 +1,6 @@
 package cn.vove7.smartkey.key
 
+import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
 import java.util.*
@@ -31,31 +32,24 @@ inline fun <reified T> smartKey(
  * 2019/4/22
  */
 class SmartKey<T> constructor(
-        private val defaultValue: T,
+        val defaultValue: T,
+        cls: Class<*>,
+        encrypt: Boolean = false,
+        key: String? = null
+) : IKey(cls, encrypt, key) {
 
-        /**
-         * 指定泛型class
-         */
-        private val cls: Class<*>,
-
-        /**
-         * 加密存储数据
-         */
-        private val isEncrypt: Boolean = false,
-        /**
-         * 自定义key
-         */
-        private val key: String? = null
-) : IKey() {
-
+    /**
+     * 缓存值
+     */
     private var value: T? = defaultValue
 
+    private var init = false
 
     operator fun getValue(thisRef: Any?, p: KProperty<*>): T {
-        initConfigName(thisRef)
+        initConfig(thisRef)
         val k = key ?: p.name
         if (!init) {
-            value = getSettings(configName).get(k, defaultValue, cls, isEncrypt)
+            value = getSettingsFromCache(config).get(k, defaultValue, cls, encrypt)
             Vog.d("初始化值：$k : $value")
         }
         init = true
@@ -64,45 +58,31 @@ class SmartKey<T> constructor(
 
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, t: T) {
-        initConfigName(thisRef)
+        initConfig(thisRef)
         init = true
         val k = key ?: property.name
         Vog.d("设置值：$k = $t")
         value = t
-        getSettings(configName).set(k, t, isEncrypt)
+        getSettingsFromCache(config).set(k, t, encrypt)
     }
 
     companion object {
-        val defaultConfigName = "config"
 
+        /**
+         * WeakHashMap缓存
+         *
+         * 配置名 -> Settings
+         */
         private val cache = WeakHashMap<String, Settings>()
 
-        //缓存cls -> configName
-//        private val configNameMap = mutableMapOf<Class<*>, String>()
-//        private fun getConfigName(cls: Class<*>, dn: String): String {
-//            return configNameMap.getOrPut(cls) { dn }
-//        }
-
-        fun getSettings(name: String): Settings =
-            cache.getOrPut(name) { getSettingsImpl(name) }
-
-
-        operator fun <T> set(key: String, value: T?) {
-            getSettings(defaultConfigName).set(key, value, false)
-        }
-
-        inline operator fun <reified T> get(key: String, defaultValue: T?): T? {
-            return getSettings(defaultConfigName).get(key, defaultValue, cls = T::class.java, encrypt = false)
-        }
-
-
-        operator fun set(configName: String, k: String, v: Any) {
-            getSettings(configName).set(k, v, encrypt = false)
-        }
-
-        inline operator fun <reified T> get(configName: String, key: String, defaultValue: T): T? {
-            return getSettings(configName).get(key, defaultValue, T::class.java, false)
-        }
+        /**
+         * 从缓存获取
+         * @param name String
+         * @param key IKey
+         * @return Settings
+         */
+        fun getSettingsFromCache(config: Config): Settings =
+            cache.getOrPut(config.name) { getSettingsImpl(config) }
 
     }
 }

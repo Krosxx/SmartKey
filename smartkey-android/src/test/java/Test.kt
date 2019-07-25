@@ -1,39 +1,55 @@
-import cn.vove7.smartkey.key.IKey
-import cn.vove7.smartkey.settings.PropertiesSettings
-import cn.vove7.smartkey.tool.Vog
-import java.util.*
+import cn.vove7.smartkey.AConfig
+import cn.vove7.smartkey.annotation.Config
+import cn.vove7.smartkey.key.noCacheKey
+import cn.vove7.smartkey.key.smartKey
+import cn.vove7.smartkey.settings.FileSettings
+import org.junit.Test
 
-fun main() {
+class Test {
+
+    @Test
+    fun main() {
+        print(MyConfig.toString())
+
+        MyConfig["string"] = "1234"
+
+        println("----------------")
+        print(MyConfig.toString())
+
+        println(CConfig.c)
+        CConfig.c = 2
+        println(CConfig.c)
+
+    }
+}
+
+@Config("config_2")
+object CConfig : AConfig() {
+    var c by noCacheKey(1)
+}
+
+@Config("config_1", FileSettings::class)
+object MyConfig : AConfig() {
+    var nullableString: String? by smartKey(null)
+
+    var string: String? by smartKey("hello")
 
 
-    IKey.settingImplCls = PropertiesSettings::class.java
-    val b = System.currentTimeMillis()
+    var number: Int by smartKey(1)
 
-    Vog.init(100)
+    var nullableNumber: Int? by smartKey(null)
 
-    val start = Runtime.getRuntime().freeMemory()
-    println(Arrays.toString(RunConfig.intArray))
-    val start2 = Runtime.getRuntime().freeMemory()
-    println("mem: ${(start - start2) shr 10}")
+    var intArray: IntArray by smartKey(intArrayOf(1, 2), encrypt = true)
 
-    println(RunConfig.number)
+    var model: Model? by smartKey(null, encrypt = true)
 
-    RunConfig.number = 2
-    println(RunConfig.string)
-    RunConfig.string = "aaa"
-    println(RunConfig.nullableNumber)
-    RunConfig.nullableNumber = 5
+    override fun toString(): String = buildString {
 
-    println(RunConfig.nullableString)
-    RunConfig.nullableString = "abc"
-
-    println(RunConfig.model)
-    RunConfig.model = Model()
-    println(RunConfig.model)
-
-    RunConfig.intArray = intArrayOf(2, 3, 4, 9)
-
-    val e = System.currentTimeMillis()
-    println(e - b)
-
+        appendln("nullableString: $nullableString")
+        appendln("string: $string")
+        appendln("number: $number")
+        appendln("nullableNumber: $nullableNumber")
+        appendln("intArray: $intArray")
+        appendln("model: $model")
+    }
 }

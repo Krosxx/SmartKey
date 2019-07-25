@@ -5,16 +5,26 @@ import java.io.File
 
 
 /**
- * # WindowsSettings
- * Windows 系统下实现
- * 暂时使用 文件存储配置
+ * # FileSettings
+ * 文件存储
  * @author Vove
  * 2019/6/18
  */
-class FileSettings(val configDir: String) : Settings {
+class FileSettings(val configName: String) : Settings {
+
+    companion object {
+        //存储目录
+        var baseDir: String? = null
+    }
+
+    private val configDir by lazy {
+        if (baseDir != null) "$baseDir/$configName"
+        //默认当前目录
+        else configName
+    }
 
     init {
-        File(configDir).apply {
+        File(configName).apply {
             if (!exists()) mkdir()
         }
     }
@@ -106,7 +116,7 @@ class FileSettings(val configDir: String) : Settings {
             } catch (e: Exception) {
                 print(e.message + absolutePath)
             }
-            writeText(value.toString())
+            writeText(value)
         }
     }
 

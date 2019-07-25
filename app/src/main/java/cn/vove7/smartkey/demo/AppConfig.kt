@@ -1,7 +1,8 @@
 package cn.vove7.smartkey.demo
 
-import cn.vove7.smartkey.BaseConfig
+import cn.vove7.smartkey.AConfig
 import cn.vove7.smartkey.R
+import cn.vove7.smartkey.android.AndroidSettings
 import cn.vove7.smartkey.android.smartKey
 import cn.vove7.smartkey.annotation.Config
 
@@ -11,8 +12,8 @@ import cn.vove7.smartkey.annotation.Config
  * @author 11324
  * 2019/4/21
  */
-@Config("app")
-object AppConfig : BaseConfig {
+@Config(implCls = AndroidSettings::class)
+object AppConfig : AConfig() {
 
     //基本类型存储
     var text: String by smartKey("a", keyId = R.string.key_text)

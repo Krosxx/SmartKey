@@ -1,7 +1,9 @@
 package cn.vove7.smartkey.key
 
+import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
-import cn.vove7.smartkey.settings.FileSettings
+import cn.vove7.smartkey.annotation.parseConfigAnnotation
+import cn.vove7.smartkey.settings.PropertiesSettings
 import cn.vove7.smartkey.tool.GsonHelper
 import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.tool.encryptor.AESEncryptor
@@ -9,7 +11,7 @@ import cn.vove7.smartkey.tool.toJson
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
 import com.russhwolf.settings.minusAssign
-import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.KClass
 
 /**
  * # IKey
@@ -17,51 +19,67 @@ import kotlin.reflect.full.findAnnotation
  * @author Vove
  * 2019/6/19
  */
-abstract class IKey {
+abstract class IKey(
+        /**
+         * 指定泛型class
+         */
+        internal val cls: Class<*>,
 
+        /**
+         * 加密存储数据
+         */
+        internal val encrypt: Boolean = false,
+        /**
+         * 自定义key
+         */
+        internal val key: String? = null
+) {
+    lateinit var config: Config
 
-    lateinit var configName: String
-
-    var init: Boolean = false
 
     @Synchronized
-    fun initConfigName(thisRef: Any?) {
-        if (!init) {
-            configName = if (thisRef == null) SmartKey.defaultConfigName
+    fun initConfig(thisRef: Any?) {
+        if (!::config.isInitialized) {
+            if (thisRef == null) {
+                throw IllegalStateException("请在类中属性使用")
+            }
             //反射获取类注解@Config(name)
-            else thisRef::class.java.kotlin
-                    .findAnnotation<Config>()?.let {
-                        if (it.name.isEmpty()) SmartKey.defaultConfigName
-                        else it.name
-                    } ?: SmartKey.defaultConfigName
-            Vog.d("初始化配置文件名：$configName")
+            else {
+                config = if (thisRef is BaseConfig) {
+                    thisRef.config
+                } else parseConfigAnnotation(thisRef)
+            }
+            Vog.d("初始化配置：${config.name} ${config.implCls.simpleName}")
         }
     }
+
+    val settings: Settings by lazy { getSettingsImpl(config) }
 
     companion object {
-        fun getSettingsImpl(configName: String): Settings = getSettingsFromCls(configName)
 
-        operator fun <T> set(key: String, value: T?) {
-            getSettingsImpl(SmartKey.defaultConfigName).set(key, value, false)
-        }
-
-        inline operator fun <reified T> get(key: String, defaultValue: T?): T? {
-            return getSettingsImpl(SmartKey.defaultConfigName).get(key, defaultValue, cls = T::class.java, encrypt = false)
-        }
-
-        var settingImplCls: Class<out Settings> =
+        val DEFAULT_CONFIG_NAME = "config"
+        /**
+         * 默认存储实现
+         */
+        var DEFAULT_SETTING_IMPL_CLS: KClass<out Settings> =
             when (System.getProperties().getProperty("sun.desktop")) {
-                "windows" -> FileSettings::class.java
-                else -> FileSettings::class.java
+                "windows" -> PropertiesSettings::class
+                else -> PropertiesSettings::class
             }
 
-        fun getSettingsFromCls(configName: String): Settings {
-            val con = settingImplCls.getConstructor(String::class.java)
+        fun getSettingsImpl(config: Config): Settings {
+            val con = config.parseImplCls.java.getConstructor(String::class.java)
                 ?: throw Exception("Settings实现类必须有String的构造函数")
 
-            return con.newInstance(configName)
+            return con.newInstance(config.name)
         }
+
+        val Config.parseImplCls: KClass<out Settings>
+            get() = if (implCls == Settings::class) DEFAULT_SETTING_IMPL_CLS
+            else implCls
+
     }
+
 }
 
 @Suppress("UNCHECKED_CAST")

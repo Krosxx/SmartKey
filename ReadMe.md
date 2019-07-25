@@ -11,6 +11,7 @@
 
 - [基本使用](#基本使用)
 - [更多操作](#更多操作)
+- [基本存储实现](#基本存储实现)
 - [自定义持久化实现](#自定义持久化实现)
 - [引入SmartKey](#引入SmartKey)
 
@@ -84,12 +85,36 @@ AppConfig.userInfo = user
 
 3. 配置类附加功能
 
-继承`BaseConfig`拥有配置类基础操作
+继承`AConfig`拥有配置类基础操作
 ```kotlin
-object AppConfig : BaseConfig
+object AppConfig : AConfig() {
+    //...
+}
+```
+```kotlin
 
 //清空此配置所有key
 AppConfig.clear()
+
+//直接存储key
+AppConfig["key"] = 1 //key, value
+AppConfig["text"] = "abc" //key, value
+
+val s = AppConfig["text", "default"]//key, default
+
+//普通存储
+AppConfig["key"] = 1
+//加密储存
+AppConfig["key", true] = 1  
+
+
+//获取可空数据
+1. val user = AppConfig.get<UserInfo?>("userInfo", null)
+2. val user = AppConfig["userInfo", null as UserInfo?]
+
+//获取加密内容
+val user: UserInfo? = AppConfig["userInfo", null, true]
+
 ```
 
 ### demo
@@ -119,15 +144,20 @@ AppConfig.clear()
 
 ```
 
-- 使用`SmartKey`直接操作key和value
+- 为每个配置类设置存储实现
 
 ```kotlin
-SmartKey["app2", "key"] = 1 //configName, key, value
-SmartKey["text"] = "234" //key, value
+@Config(implCls = FileSettings::class)
+class AppConfig1 {
 
-val s = SmartKey["app2", "text", "de"]//config, key, default
+}
 
+@Config(implCls = PropertiesSettings::class)
+class AppConfig2 {
+
+}
 ```
+
 
 - 无缓存的NoCacheKey
 
@@ -138,6 +168,19 @@ val s = SmartKey["app2", "text", "de"]//config, key, default
 ```
 
 
+### 基本存储实现
+
+- PropertiesSettings
+
+基于java `PropertiesSettings`持久化  
+可设置`baseDir` `PropertiesSettings.baseDir = "..."`
+
+- FileSettings
+
+使用文件存储。  
+可设置`baseDir` `FileSettings.baseDir = "..."`
+
+
 ### 自定义持久化实现
 
 1. 实现`com.russhwolf.settings.Settings`接口
@@ -146,8 +189,21 @@ val s = SmartKey["app2", "text", "de"]//config, key, default
 //必须存在构造函数(val configName:String)
 
 class MySettingsImpl(val configName:String) : Settings
-``` 
-2. 设置实现类为MySettingsImpl
+```
+
+2. 使用自定义实现类
+
+在配置类设置：
+
+```kotlin
+@Config(implCls = MySettingsImpl::class)
+class AppConfig {
+
+}
+```
+
+ 
+3. 设置默认实现类为MySettingsImpl
 - kotlin
 
 `IKey.settingImplCls = MySettingsImpl::class.java`

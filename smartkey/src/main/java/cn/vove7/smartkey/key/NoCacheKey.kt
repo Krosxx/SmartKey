@@ -24,31 +24,31 @@ open class NoCacheKey<T>(
         /**
          * 指定泛型class
          */
-        private val cls: Class<*>,
+        cls: Class<*>,
 
         /**
          * 加密存储数据
          */
-        private val isEncrypt: Boolean = false,
+        encrypt: Boolean = false,
         /**
          * 自定义key
          */
-        private val key: String? = null
-) : IKey() {
+        key: String? = null
+) : IKey(cls, encrypt, key) {
 
     operator fun getValue(thisRef: Any?, p: KProperty<*>): T {
-        initConfigName(thisRef)
+        initConfig(thisRef)
         val k = key ?: p.name
-        val value = getSettingsImpl(configName).get(k, defaultValue, cls, isEncrypt)
+        val value = settings.get(k, defaultValue, cls, encrypt)
         return value ?: defaultValue
     }
 
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, t: T) {
-        initConfigName(thisRef)
+        initConfig(thisRef)
         val k = key ?: property.name
         Vog.d("设置值：$k = $t")
-        getSettingsImpl(configName).set(k, t, isEncrypt)
+        settings.set(k, t, encrypt)
     }
 
 }

@@ -17,5 +17,5 @@ import cn.vove7.smartkey.key.set
  * @param encrypt Boolean
  */
 fun BaseConfig.set(keyId: Int, value: Any?, encrypt: Boolean = false) {
-    SmartKey.getSettings(configName).set(AndroidSettings.s(keyId), value, encrypt)
+    settings.set(AndroidSettings.s(keyId), value, encrypt)
 }

@@ -1,5 +1,6 @@
 package cn.vove7.smartkey.settings
 
+import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
 import java.io.File
 import java.io.FileInputStream
@@ -14,11 +15,19 @@ import java.util.*
  */
 class PropertiesSettings(private val configName: String) : Settings {
 
-    private val configFile get() = File("properties/$configName.properties")
+
+    companion object {
+        //存储目录
+        var baseDir: String? = null
+    }
+
+    private val prefix get() = if (baseDir != null) "$baseDir/properties" else "properties"
+    private val configFile
+        get() = File(prefix + "/$configName.properties")
 
     private val properties: Properties by lazy {
         Properties().apply {
-            File("properties").also {
+            File(prefix).also {
                 if (!it.exists()) it.mkdir()
             }
             configFile.let {
@@ -26,6 +35,8 @@ class PropertiesSettings(private val configName: String) : Settings {
                     it.createNewFile()
                 }
                 load(FileInputStream(it))
+
+                Vog.d("配置路径：${it.absolutePath}")
             }
         }
     }
