@@ -3,6 +3,7 @@ import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.key.noCacheKey
 import cn.vove7.smartkey.key.smartKey
 import cn.vove7.smartkey.settings.FileSettings
+import cn.vove7.smartkey.settings.JsonSettings
 import org.junit.Test
 
 class Test {
@@ -19,7 +20,37 @@ class Test {
         println(CConfig.c)
         CConfig.c = 2
         println(CConfig.c)
+        println(JsonConfig.number)
+        JsonConfig.number += 123
+        println(JsonConfig.number)
 
+    }
+}
+
+@Config("config_3", implCls = JsonSettings::class)
+object JsonConfig : AConfig() {
+
+    var nullableString: String? by smartKey(null)
+
+    var string: String? by smartKey("hello")
+
+
+    var number: Int by smartKey(1)
+
+    var nullableNumber: Int? by smartKey(null)
+
+    var intArray: IntArray by smartKey(intArrayOf(1, 2), encrypt = true)
+
+    var model: Model? by smartKey(null, encrypt = true)
+
+    override fun toString(): String = buildString {
+
+        appendln("nullableString: $nullableString")
+        appendln("string: $string")
+        appendln("number: $number")
+        appendln("nullableNumber: $nullableNumber")
+        appendln("intArray: $intArray")
+        appendln("model: $model")
     }
 }
 
