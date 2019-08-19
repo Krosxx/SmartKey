@@ -75,16 +75,16 @@ object AESEncryptor : Encryptor {
     }
 
     override fun decrypt(cipherText: String): String {
-        try {
+        return try {
             val encrypted1 = Base64.decode(cipherText, Base64.NO_WRAP)
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             val keyspec = SecretKeySpec(key.toByteArray(), "AES")
             cipher.init(Cipher.DECRYPT_MODE, keyspec)
             val original = cipher.doFinal(encrypted1)
-            return String(original)
+            String(original)
         } catch (e: Exception) {
             e.printStackTrace()
-            return cipherText
+            cipherText
         }
 
     }

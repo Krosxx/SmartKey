@@ -95,7 +95,9 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Class<*>, encrypt: Bool
             getLong(key, (defaultValue as Long?) ?: 0L) as T
         }
         "String" -> {
-            getString(key, (defaultValue as String?) ?: "") as T
+            val content = getString(key, (defaultValue as String?) ?: "")
+            return (if (encrypt) AESEncryptor.decrypt(content)
+            else content) as T
         }
         "Float" -> {
             getFloat(key, (defaultValue as Float?) ?: 0f) as T
@@ -137,7 +139,9 @@ fun <T> Settings.set(key: String, value: T?, encrypt: Boolean = false) {
             putLong(key, value)
         }
         is String -> {
-            putString(key, value)
+            val v = if (encrypt) AESEncryptor.encrypt(value)
+            else value
+            putString(key, v)
         }
         is Float -> {
             putFloat(key, value)
