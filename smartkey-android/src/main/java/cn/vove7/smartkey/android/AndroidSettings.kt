@@ -63,6 +63,7 @@ class AndroidSettings(private val configName: String) : Settings by create(confi
          * @param context Context
          * @param settingImplCls Class<out Settings> 持久化存储实现类，默认为AndroidSettings
          */
+        @JvmOverloads
         fun init(context: Context, settingImplCls: KClass<out Settings> = AndroidSettings::class) {
             IKey.DEFAULT_SETTING_IMPL_CLS = settingImplCls
             Vog.init(100)//不输出日志

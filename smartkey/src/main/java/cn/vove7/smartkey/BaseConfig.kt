@@ -19,7 +19,7 @@ interface BaseConfig {
     //settings 可放与此
     //继承实现
 
-    val config: Config get() = this::class.findAnnotation<Config>() ?: throw Exception("")
+    val config: Config get() = this::class.findAnnotation() ?: throw Exception("请在类${this::class.simpleName}使用注解@Config")
 
     /**
      * 清空所有key

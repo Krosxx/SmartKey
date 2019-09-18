@@ -3,9 +3,15 @@ package cn.vove7.smartkey.tool
 import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
 import com.google.gson.annotations.Expose
 import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
+import com.google.gson.stream.JsonToken.*
+import com.google.gson.stream.JsonWriter
 import java.lang.reflect.Type
+
 
 /**
  * # GsonHelper
@@ -83,7 +89,7 @@ object GsonHelper {
  * @receiver Any
  * @return String
  */
-fun Any?.toJson(): String {
+fun Any?.toJson(pretty: Boolean = false): String {
     return GsonHelper.toJson(this)
 }
 
@@ -95,3 +101,69 @@ fun Any?.toJson(): String {
 inline fun <reified T> String.fromJson(): T? {
     return GsonHelper.fromJson<T>(this)
 }
+
+class GsonTypeAdapter : TypeAdapter<Any>() {
+
+    override fun read(`in`: JsonReader): Any? {
+        // 反序列化
+        val token = `in`.peek()
+        when (token) {
+            BEGIN_ARRAY -> {
+                val list = ArrayList<Any?>()
+                `in`.beginArray()
+                while (`in`.hasNext()) {
+                    list.add(read(`in`))
+                }
+                `in`.endArray()
+                return list
+            }
+
+            BEGIN_OBJECT -> {
+                val map = HashMap<String, Any>()
+                `in`.beginObject()
+                while (`in`.hasNext()) {
+                    map[`in`.nextName()] = read(`in`)!!
+                }
+                `in`.endObject()
+                return map
+            }
+
+            STRING ->
+                return `in`.nextString()
+
+            NUMBER -> {
+                /**
+                 * 改写数字的处理逻辑，将数字值分为整型与浮点型。
+                 */
+                val dbNum = `in`.nextDouble()
+
+                // 数字超过long的最大值，返回浮点类型
+                if (dbNum > java.lang.Long.MAX_VALUE) {
+                    return dbNum
+                }
+
+                // 判断数字是否为整数值
+                val lngNum = dbNum.toLong()
+                return if (dbNum == lngNum.toDouble()) {
+                    lngNum
+                } else {
+                    dbNum
+                }
+            }
+
+            BOOLEAN -> return `in`.nextBoolean()
+
+            NULL -> {
+                `in`.nextNull()
+                return null
+            }
+
+            else -> throw IllegalStateException()
+        }
+    }
+
+    override fun write(out: JsonWriter, value: Any) {
+        // 序列化不处理
+    }
+}
+

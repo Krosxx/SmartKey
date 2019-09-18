@@ -3,7 +3,6 @@ package cn.vove7.smartkey.settings
 import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.tool.fromJson
 import cn.vove7.smartkey.tool.toJson
-import com.russhwolf.settings.Settings
 import java.io.File
 
 /**
@@ -12,9 +11,11 @@ import java.io.File
  * @author Vove
  * 2019/7/25
  */
-class JsonSettings(private val configName: String) : Settings {
+class JsonSettings(private val configName: String) : BaseSyncFileSetting() {
 
-    val map: ObserveableMap<String, Any>
+    override val configFile: File
+        get() = File(configPath, fileName)
+    lateinit var map: ObserveableMap<String, Any>
 
     companion object {
         var CONFIG_DIR: String? = null
@@ -34,7 +35,10 @@ class JsonSettings(private val configName: String) : Settings {
                 mkdirs()
             }
         }
-        val jmap = File(configPath, fileName).let {
+    }
+
+    override fun onReloadConfig(cf: File) {
+        val jmap = cf.let {
             Vog.d("配置路径：${it.absolutePath}")
             if (it.exists()) {
                 it.readText().fromJson<MutableMap<String, Any>>()
@@ -46,10 +50,11 @@ class JsonSettings(private val configName: String) : Settings {
         map.lis = {
             sync()
         }
+        Vog.d("onReloadConfig $map")
     }
 
     private fun sync() {
-        File(configPath, fileName).writeText(map.toJson())
+        File(configPath, fileName).writeText(map.toJson(true))
     }
 
     override fun clear() {
@@ -57,28 +62,28 @@ class JsonSettings(private val configName: String) : Settings {
     }
 
     override fun remove(key: String) {
-        map -= key
+        map.remove(key)
     }
 
-    override fun hasKey(key: String): Boolean = key in map
+    override fun hasKey_(key: String): Boolean = key in map
 
-    override fun putInt(key: String, value: Int) {
+    override fun putInt_(key: String, value: Int) {
         map[key] = value
     }
 
     override fun getInt(key: String, defaultValue: Int): Int {
-        return map[key]?.toString()?.toIntOrNull() ?: defaultValue
+        return ((map[key] as? Number)?.toInt()) ?: defaultValue
     }
 
-    override fun putLong(key: String, value: Long) {
+    override fun putLong_(key: String, value: Long) {
         map[key] = value
     }
 
     override fun getLong(key: String, defaultValue: Long): Long {
-        return map[key]?.toString()?.toLongOrNull() ?: defaultValue
+        return ((map[key] as? Number)?.toLong()) ?: defaultValue
     }
 
-    override fun putString(key: String, value: String) {
+    override fun putString_(key: String, value: String) {
         map[key] = value
     }
 
@@ -86,31 +91,29 @@ class JsonSettings(private val configName: String) : Settings {
         return map[key]?.toString() ?: defaultValue
     }
 
-    override fun putFloat(key: String, value: Float) {
+    override fun putFloat_(key: String, value: Float) {
         map[key] = value
     }
 
     override fun getFloat(key: String, defaultValue: Float): Float {
-        return map[key]?.toString()?.toFloatOrNull() ?: defaultValue
+        return ((map[key] as? Number)?.toFloat()) ?: defaultValue
     }
 
-    override fun putDouble(key: String, value: Double) {
+    override fun putDouble_(key: String, value: Double) {
         map[key] = value
     }
 
     override fun getDouble(key: String, defaultValue: Double): Double {
-        return map[key]?.toString()?.toDouble() ?: defaultValue
+        return ((map[key] as? Number)?.toDouble()) ?: defaultValue
     }
 
-    override fun putBoolean(key: String, value: Boolean) {
+    override fun putBoolean_(key: String, value: Boolean) {
         map[key] = value
     }
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
         return map[key]?.toString()?.toBoolean() ?: defaultValue
     }
-
-
 }
 
 

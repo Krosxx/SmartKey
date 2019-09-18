@@ -13,7 +13,7 @@ import java.util.*
  * @author Vove
  * 2019/6/19
  */
-class PropertiesSettings(private val configName: String) : Settings {
+class PropertiesSettings(private val configName: String) : BaseSyncFileSetting() {
 
 
     companion object {
@@ -22,15 +22,18 @@ class PropertiesSettings(private val configName: String) : Settings {
     }
 
     private val prefix get() = if (baseDir != null) "$baseDir/properties" else "properties"
-    private val configFile
-        get() = File(prefix + "/$configName.properties")
 
-    private val properties: Properties by lazy {
-        Properties().apply {
+    override val configFile
+        get() = File("$prefix/$configName.properties")
+
+    private lateinit var properties: Properties
+
+    override fun onReloadConfig(cf: File) {
+        properties = Properties().apply {
             File(prefix).also {
                 if (!it.exists()) it.mkdir()
             }
-            configFile.let {
+            cf.let {
                 if (!it.exists()) {
                     it.createNewFile()
                 }
@@ -51,10 +54,10 @@ class PropertiesSettings(private val configName: String) : Settings {
         properties.store(FileOutputStream(configFile), null)
     }
 
-    override fun hasKey(key: String): Boolean = properties.containsKey(key)
+    override fun hasKey_(key: String): Boolean = properties.containsKey(key)
 
 
-    override fun putInt(key: String, value: Int) {
+    override fun putInt_(key: String, value: Int) {
         properties[key] = value.toString()
         properties.store(FileOutputStream(configFile), null)
     }
@@ -62,7 +65,7 @@ class PropertiesSettings(private val configName: String) : Settings {
     override fun getInt(key: String, defaultValue: Int): Int = properties.getProperty(key)?.toIntOrNull()
         ?: defaultValue
 
-    override fun putLong(key: String, value: Long) {
+    override fun putLong_(key: String, value: Long) {
         properties[key] = value.toString()
         properties.store(FileOutputStream(configFile), null)
     }
@@ -71,7 +74,7 @@ class PropertiesSettings(private val configName: String) : Settings {
         ?: defaultValue
 
 
-    override fun putString(key: String, value: String) {
+    override fun putString_(key: String, value: String) {
         properties[key] = value
         properties.store(FileOutputStream(configFile), null)
     }
@@ -79,7 +82,7 @@ class PropertiesSettings(private val configName: String) : Settings {
     override fun getString(key: String, defaultValue: String): String = properties.getProperty(key)
         ?: defaultValue
 
-    override fun putFloat(key: String, value: Float) {
+    override fun putFloat_(key: String, value: Float) {
         properties[key] = value.toString()
         properties.store(FileOutputStream(configFile), null)
     }
@@ -87,7 +90,7 @@ class PropertiesSettings(private val configName: String) : Settings {
     override fun getFloat(key: String, defaultValue: Float): Float = properties.getProperty(key)?.toFloatOrNull()
         ?: defaultValue
 
-    override fun putDouble(key: String, value: Double) {
+    override fun putDouble_(key: String, value: Double) {
         properties[key] = value.toString()
         properties.store(FileOutputStream(configFile), null)
     }
@@ -95,7 +98,7 @@ class PropertiesSettings(private val configName: String) : Settings {
     override fun getDouble(key: String, defaultValue: Double): Double = properties.getProperty(key)?.toDoubleOrNull()
         ?: defaultValue
 
-    override fun putBoolean(key: String, value: Boolean) {
+    override fun putBoolean_(key: String, value: Boolean) {
         properties[key] = value.toString()
         properties.store(FileOutputStream(configFile), null)
     }
