@@ -77,12 +77,13 @@ class SmartKey<T> constructor(
 
         /**
          * 从缓存获取
-         * @param name String
-         * @param key IKey
          * @return Settings
          */
-        fun getSettingsFromCache(config: Config): Settings =
+        fun getSettingsFromCache(config: MyConfig): Settings =
             cache.getOrPut(config.name) { getSettingsImpl(config) }
+
+        fun getSettingsFromCache(config: Config, thisRef: Any): Settings =
+            cache.getOrPut(config.name) { getSettingsImpl(MyConfig(config, thisRef)) }
 
     }
 }

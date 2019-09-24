@@ -6,8 +6,9 @@ dependencies {
 //    api fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    api "org.jetbrains.kotlin:kotlin-reflect:1.3.30"
-    api 'com.google.code.gson:gson:2.8.5'
+    api "org.jetbrains.kotlin:kotlin-reflect:1.3.50"
+    //noinspection GradleDependency
+    api 'com.alibaba:fastjson:1.1.71.android'
 
 }
 

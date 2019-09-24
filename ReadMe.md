@@ -255,4 +255,4 @@ dependencies {
 
 - [Kotlin](https://kotlinlang.org/)
 - 底层存储使用[multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)
-- [Gson](https://github.com/google/gson)
+- [FastJson](https://github.com/alibaba/fastjson)

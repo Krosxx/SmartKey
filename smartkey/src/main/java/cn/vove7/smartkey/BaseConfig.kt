@@ -42,7 +42,7 @@ interface BaseConfig {
      * Settings实例
      * 使用缓存
      */
-    val settings: Settings get() = SmartKey.getSettingsFromCache(config)
+    val settings: Settings get() = SmartKey.getSettingsFromCache(config, this)
 }
 
 /**

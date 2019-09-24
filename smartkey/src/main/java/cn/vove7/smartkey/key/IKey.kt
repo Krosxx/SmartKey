@@ -4,7 +4,7 @@ import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
 import cn.vove7.smartkey.settings.PropertiesSettings
-import cn.vove7.smartkey.tool.GsonHelper
+import cn.vove7.smartkey.tool.JsonHelper
 import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.tool.encryptor.AESEncryptor
 import cn.vove7.smartkey.tool.toJson
@@ -34,7 +34,15 @@ abstract class IKey(
          */
         internal val key: String? = null
 ) {
-    lateinit var config: Config
+    class MyConfig(config: Config, thisRef: Any) {
+        val name: String = config.name.let {
+            if (it.isEmpty()) thisRef::class.simpleName?.toLowerCase()
+                ?: DEFAULT_CONFIG_NAME else it
+        }
+        val implCls = config.implCls
+    }
+
+    lateinit var config: MyConfig
 
 
     @Synchronized
@@ -45,9 +53,9 @@ abstract class IKey(
             }
             //反射获取类注解@Config(name)
             else {
-                config = if (thisRef is BaseConfig) {
+                config = MyConfig(if (thisRef is BaseConfig) {
                     thisRef.config
-                } else parseConfigAnnotation(thisRef)
+                } else parseConfigAnnotation(thisRef), thisRef)
             }
             Vog.d("初始化配置：${config.name} ${config.implCls.simpleName}")
         }
@@ -67,14 +75,14 @@ abstract class IKey(
                 else -> PropertiesSettings::class
             }
 
-        fun getSettingsImpl(config: Config): Settings {
+        fun getSettingsImpl(config: MyConfig): Settings {
             val con = config.parseImplCls.java.getConstructor(String::class.java)
                 ?: throw Exception("Settings实现类必须有String的构造函数")
 
             return con.newInstance(config.name)
         }
 
-        val Config.parseImplCls: KClass<out Settings>
+        val MyConfig.parseImplCls: KClass<out Settings>
             get() = if (implCls == Settings::class) DEFAULT_SETTING_IMPL_CLS
             else implCls
 
@@ -116,7 +124,7 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Class<*>, encrypt: Bool
                     if (encrypt) AESEncryptor.decrypt(it)
                     else it
                 }
-                GsonHelper.fromJson(value, cls) ?: defaultValue
+                JsonHelper.fromJson(value, cls) ?: defaultValue
             } catch (e: Exception) {
                 e.printStackTrace()
                 Vog.e("$key   de: $defaultValue")
