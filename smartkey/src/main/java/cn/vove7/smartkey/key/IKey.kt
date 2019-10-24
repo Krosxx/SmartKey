@@ -3,6 +3,7 @@ package cn.vove7.smartkey.key
 import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
+import cn.vove7.smartkey.settings.JsonSettings
 import cn.vove7.smartkey.settings.PropertiesSettings
 import cn.vove7.smartkey.tool.JsonHelper
 import cn.vove7.smartkey.tool.Vog
@@ -71,8 +72,8 @@ abstract class IKey(
          */
         var DEFAULT_SETTING_IMPL_CLS: KClass<out Settings> =
             when (System.getProperties().getProperty("sun.desktop")) {
-                "windows" -> PropertiesSettings::class
-                else -> PropertiesSettings::class
+                "windows" -> JsonSettings::class
+                else -> JsonSettings::class
             }
 
         fun getSettingsImpl(config: MyConfig): Settings {

@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
 import cn.vove7.smartkey.R
-import cn.vove7.smartkey.android.AndroidSettings
 import cn.vove7.smartkey.tool.PrintListener
 import cn.vove7.smartkey.tool.Vog
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        AndroidSettings.init(this)
         Vog.init(0)//输出日志
         Vog.addListener(lis)
 

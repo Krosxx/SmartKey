@@ -22,7 +22,7 @@
 1. 定义配置类
 ```kotlin
 //这里可以使用注解配置存储文件名，多个配置类可分文件存储
-@Config("app_config")
+@Config("app_config", implCls = JsonSettings::class)
 object AppConfig {
 
     //基本类型存储
@@ -97,11 +97,12 @@ AppConfig["key", true] = 1
 
 
 //获取可空数据
-1. val user = AppConfig.get<UserInfo?>("userInfo", null)
-2. val user = AppConfig["userInfo", null as UserInfo?]
+val user = AppConfig.get<UserInfo?>("userInfo", null)
+
+val user = AppConfig["userInfo", null as UserInfo?]
 
 //获取加密内容
-val user: UserInfo? = AppConfig["userInfo", null, true]
+val user: UserInfo? = AppConfig["userInfo", null as UserInfo?, true] // ?
 
 ```
 
@@ -134,6 +135,8 @@ val user: UserInfo? = AppConfig["userInfo", null, true]
 
 - 为每个配置类设置存储实现
 
+> 不指定`implCls`时, 默认实现为`JsonSettings`
+
 ```kotlin
 @Config(implCls = FileSettings::class)
 class AppConfig1 {
@@ -151,6 +154,9 @@ class AppConfig2 {
 
 由于`SmartKey`会对value进行缓存，在多进程会存在问题。因此而生的`NoCacheKey`，保证读取的数据是实时的。
 使用和SmartKey基本一致。
+
+另外，在使用基于文件存储的Settings时，修改文件配置`NoCacheKey`可以监听文件变化，来载入最新配置。
+
 ```kotlin
     var text: String by noCacheKey("defaultValue", key = "your_key")
 ```
@@ -158,6 +164,10 @@ class AppConfig2 {
 
 ### 基本存储实现
 
+- JsonSettings
+
+使用json格式存储配置。
+ 
 - PropertiesSettings
 
 基于java `PropertiesSettings`持久化  
@@ -181,25 +191,13 @@ class MySettingsImpl(val configName:String) : Settings
 
 2. 使用自定义实现类
 
-在配置类设置：
+在配置类设置注解参数`implCls`：
 
 ```kotlin
 @Config(implCls = MySettingsImpl::class)
 class AppConfig {
 
 }
-```
-
- 
-3. 设置默认实现类为MySettingsImpl
-- kotlin
-
-`IKey.settingImplCls = MySettingsImpl::class.java`
-
-- Android
-
-```kotlin
-AndroidSettings.init(context, MySettingsImpl::class.java)
 ```
 
 ### 引入SmartKey
@@ -232,12 +230,6 @@ dependencies {
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
-
-**注意Android库需要在Application中初始化**
-
-```kotlin
-AndroidSettings.init(context)
-```
 
 ### TODO
 

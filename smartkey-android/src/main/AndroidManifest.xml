@@ -1,2 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cn.vove7.smartkey" />
+    package="cn.vove7.smartkey">
+    <application>
+        <provider
+            android:name=".android.SmartKeyIniterContentProvider"
+            android:authorities="${applicationId}"
+            android:exported="false" />
+    </application>
+</manifest>
