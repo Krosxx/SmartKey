@@ -5,6 +5,7 @@ import cn.vove7.smartkey.key.SmartKey
 import cn.vove7.smartkey.key.get
 import cn.vove7.smartkey.key.set
 import com.russhwolf.settings.Settings
+import com.russhwolf.settings.contains
 import kotlin.reflect.full.findAnnotation
 
 /**
@@ -19,7 +20,9 @@ interface BaseConfig {
     //settings 可放与此
     //继承实现
 
-    val config: Config get() = this::class.findAnnotation() ?: throw Exception("请在类${this::class.simpleName}使用注解@Config")
+    val config: Config
+        get() = this::class.findAnnotation()
+            ?: throw Exception("请在类${this::class.simpleName}使用注解@Config")
 
     /**
      * 清空所有key
@@ -37,6 +40,8 @@ interface BaseConfig {
     fun set(key: String, value: Any?, encrypt: Boolean = false) {
         settings.set(key, value, encrypt)
     }
+
+    operator fun contains(key: String): Boolean = key in settings
 
     /**
      * Settings实例
