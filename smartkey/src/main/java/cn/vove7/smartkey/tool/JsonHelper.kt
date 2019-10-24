@@ -1,14 +1,40 @@
 package cn.vove7.smartkey.tool
 
-import com.alibaba.fastjson.JSON
+import com.google.gson.ExclusionStrategy
+import com.google.gson.FieldAttributes
+import com.google.gson.GsonBuilder
+import com.google.gson.annotations.Expose
 
 /**
- * # GsonHelper
+ * # JsonHelper
  * 使用[Expose] 注解属性，是否需要被序列化
  * @author Administrator
  * 2018/9/19
  */
-object JsonHelper {
+internal object JsonHelper {
+
+    private val builder
+        get() = GsonBuilder().apply {
+            serializeSpecialFloatingPointValues()
+            addSerializationExclusionStrategy(object : ExclusionStrategy {
+
+                override fun shouldSkipField(fieldAttributes: FieldAttributes): Boolean {
+                    val expose = fieldAttributes.getAnnotation(Expose::class.java)
+                    return if (expose == null) false
+                    else !expose.serialize
+                }
+
+                override fun shouldSkipClass(aClass: Class<*>): Boolean = false
+            }).addDeserializationExclusionStrategy(object : ExclusionStrategy {
+                override fun shouldSkipField(fieldAttributes: FieldAttributes): Boolean {
+                    val expose = fieldAttributes.getAnnotation(Expose::class.java)
+                    return if (expose == null) false
+                    else !expose.deserialize
+                }
+
+                override fun shouldSkipClass(aClass: Class<*>): Boolean = false
+            }).disableHtmlEscaping()
+        }
 
     /**
      * 对象转json
@@ -18,7 +44,9 @@ object JsonHelper {
      */
     fun toJson(model: Any?, pretty: Boolean = false): String {
         if (model == null) return ""
-        return JSON.toJSONString(model, pretty)
+        val b = builder
+        if (pretty) b.setPrettyPrinting()
+        return b.create().toJson(model)
     }
 
 
@@ -29,12 +57,11 @@ object JsonHelper {
      */
     @Throws
     inline fun <reified T> fromJson(s: String?): T? {
-        val type = T::class.java
-        return JSON.parseObject<T>(s, type)
+        return builder.create().fromJson<T>(s, T::class.java)
     }
 
     fun <T> fromJson(s: String?, cls: Class<*>): T? {
-        return JSON.parseObject<T>(s, cls)
+        return builder.create().fromJson<T>(s, cls)
     }
 
 }
@@ -44,8 +71,8 @@ object JsonHelper {
  * @receiver Any
  * @return String
  */
-fun Any?.toJson(pretty: Boolean = false): String {
-    return JsonHelper.toJson(this)
+internal fun Any?.toJson(pretty: Boolean = false): String {
+    return JsonHelper.toJson(this, pretty)
 }
 
 /**
@@ -53,7 +80,7 @@ fun Any?.toJson(pretty: Boolean = false): String {
  * @receiver String
  * @return T?
  */
-inline fun <reified T> String.fromJson(): T? {
+internal inline fun <reified T> String.fromJson(): T? {
     return JsonHelper.fromJson<T>(this)
 }
 

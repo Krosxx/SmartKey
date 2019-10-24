@@ -19,18 +19,6 @@
 
 #### 初始化
 
-- Kotlin项目
-
-无需多余操作
-
-- Android项目
-
-在Application中初始化：
-
-```kotlin
-AndroidSettings.init(context)
-```
-
 1. 定义配置类
 ```kotlin
 //这里可以使用注解配置存储文件名，多个配置类可分文件存储
@@ -245,6 +233,11 @@ dependencies {
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
 
+**注意Android库需要在Application中初始化**
+
+```kotlin
+AndroidSettings.init(context)
+```
 
 ### TODO
 
