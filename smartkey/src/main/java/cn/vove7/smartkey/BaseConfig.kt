@@ -1,12 +1,12 @@
 package cn.vove7.smartkey
 
 import cn.vove7.smartkey.annotation.Config
+import cn.vove7.smartkey.annotation.parseConfigAnnotation
 import cn.vove7.smartkey.key.SmartKey
 import cn.vove7.smartkey.key.get
 import cn.vove7.smartkey.key.set
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
-import kotlin.reflect.full.findAnnotation
 
 /**
  * # BaseConfig
@@ -21,14 +21,14 @@ interface BaseConfig {
     //继承实现
 
     val config: Config
-        get() = this::class.findAnnotation()
-            ?: throw Exception("请在类${this::class.simpleName}使用注解@Config")
+        get() = parseConfigAnnotation(this)
 
     /**
      * 清空所有key
      */
     fun clear() {
         settings.clear()
+        SmartKey.clearCache(this)
     }
 
     /**
@@ -42,6 +42,8 @@ interface BaseConfig {
     }
 
     operator fun contains(key: String): Boolean = key in settings
+
+    operator fun minusAssign(key: String): Unit = settings.remove(key)
 
     /**
      * Settings实例

@@ -21,7 +21,7 @@ annotation class Config(
  * 反射获取类注解@Config(name)
  */
 fun parseConfigAnnotation(thisRef: Any): Config {
-    val it = thisRef::class.java.kotlin.findAnnotation<Config>()
+    val it = thisRef::class.findAnnotation<Config>()
     if (it != null) {
         return it
     }

@@ -1,10 +1,12 @@
 package cn.vove7.smartkey.key
 
+import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
 import java.util.*
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.declaredMemberProperties
 
 
 /**
@@ -49,6 +51,7 @@ class SmartKey<T> constructor(
         initConfig(thisRef)
         val k = key ?: p.name
         if (!init) {
+            keys[p.name] = this
             value = getSettingsFromCache(config).get(k, defaultValue, cls, encrypt)
             Vog.d("初始化值：$k : $value")
         }
@@ -56,11 +59,13 @@ class SmartKey<T> constructor(
         return value ?: defaultValue
     }
 
-
     operator fun setValue(thisRef: Any?, property: KProperty<*>, t: T) {
         initConfig(thisRef)
-        init = true
         val k = key ?: property.name
+        if (!init) {
+            keys[property.name] = this
+        }
+        init = true
         Vog.d("设置值：$k = $t")
         value = t
         getSettingsFromCache(config).set(k, t, encrypt)
@@ -74,6 +79,19 @@ class SmartKey<T> constructor(
          * 配置名 -> Settings
          */
         private val cache = WeakHashMap<String, Settings>()
+
+        //property name to SmartKey
+        private val keys = WeakHashMap<String, SmartKey<*>>()
+
+        fun clearCache(config: BaseConfig) {
+            config::class.declaredMemberProperties.forEach {
+                //设置init标志
+                keys[it.name]?.apply {
+                    init = false
+                    value = null
+                }
+            }
+        }
 
         /**
          * 从缓存获取

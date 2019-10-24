@@ -88,6 +88,9 @@ AppConfig.clear()
 AppConfig["key"] = 1 //key, value
 AppConfig["text"] = "abc" //key, value
 
+"key" in AppConfig // is contains key
+AppConfig -= "key" // remove key
+
 val s = AppConfig["text", "default"]//key, default
 
 //普通存储
@@ -230,6 +233,20 @@ dependencies {
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
+
+
+### 值得注意的地方
+
+```kotlin
+@Config("app_config", implCls = JsonSettings::class)
+object AppConfig {
+    var text: String by smartKey("value", key = "text_key")
+}
+```
+在使用 `AppConfig -= "text_key"` 或 `AppConfig["text_key"] = "new_value"` 移除或更新`text_key`之后，由于smartKey存在缓存机制，下次获取仍会取到缓存值，为避免这种情况，请使用`noCacheKey`。
+
+另外，`AppConfig.clear()`方法是支持清除使用SmartKey进行委托的值缓存。
+
 
 ### TODO
 

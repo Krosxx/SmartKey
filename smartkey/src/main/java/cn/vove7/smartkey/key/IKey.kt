@@ -49,15 +49,13 @@ abstract class IKey(
     @Synchronized
     fun initConfig(thisRef: Any?) {
         if (!::config.isInitialized) {
-            if (thisRef == null) {
-                throw IllegalStateException("请在类中属性使用")
+            checkNotNull(thisRef) {
+                "请在类中属性使用"
+                //反射获取类注解@Config(name)
             }
-            //反射获取类注解@Config(name)
-            else {
-                config = MyConfig(if (thisRef is BaseConfig) {
-                    thisRef.config
-                } else parseConfigAnnotation(thisRef), thisRef)
-            }
+            config = MyConfig(if (thisRef is BaseConfig) {
+                thisRef.config
+            } else parseConfigAnnotation(thisRef), thisRef)
             Vog.d("初始化配置：${config.name} ${config.implCls.simpleName}")
         }
     }

@@ -1,8 +1,10 @@
 package cn.vove7.smartkey.demo
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import cn.vove7.smartkey.R
 import cn.vove7.smartkey.tool.PrintListener
@@ -38,9 +40,12 @@ class MainActivity : AppCompatActivity() {
          * 测试 set get
          */
         val s = AppConfig["text", "de"]//key, default
+
+        val user = AppConfig.get<UserInfo?>("userInfo", null)
+
         Vog.d("app2[text] : $s")
 
-        AppConfig["text"] = "234" //key, value
+//        AppConfig["text"] = "234" //key, value
 
         //number_picker
         number_picker.apply {
@@ -82,7 +87,13 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Vog.d("已无元素")
             }
-            arr_text.text = Arrays.toString(AppConfig.intArr)
+            arr_text.text = AppConfig.intArr.contentToString()
         }
+    }
+
+    fun clearAndReload(view: View) {
+        AppConfig.clear()
+        finish()
+        startActivity(Intent(this,MainActivity::class.java))
     }
 }
