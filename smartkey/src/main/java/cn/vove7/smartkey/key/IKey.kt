@@ -4,7 +4,6 @@ import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
 import cn.vove7.smartkey.settings.JsonSettings
-import cn.vove7.smartkey.settings.PropertiesSettings
 import cn.vove7.smartkey.tool.JsonHelper
 import cn.vove7.smartkey.tool.Vog
 import cn.vove7.smartkey.tool.encryptor.AESEncryptor
@@ -37,7 +36,7 @@ abstract class IKey(
 ) {
     class MyConfig(config: Config, thisRef: Any) {
         val name: String = config.name.let {
-            if (it.isEmpty()) thisRef::class.simpleName?.toLowerCase()
+            if (it.isEmpty()) thisRef::class.java.simpleName?.toLowerCase()
                 ?: DEFAULT_CONFIG_NAME else it
         }
         val implCls = config.implCls
@@ -56,7 +55,7 @@ abstract class IKey(
             config = MyConfig(if (thisRef is BaseConfig) {
                 thisRef.config
             } else parseConfigAnnotation(thisRef), thisRef)
-            Vog.d("初始化配置：${config.name} ${config.implCls.simpleName}")
+            Vog.d("初始化配置：${config.name} ${config.implCls.java.simpleName}")
         }
     }
 

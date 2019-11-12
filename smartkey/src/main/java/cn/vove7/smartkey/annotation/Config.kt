@@ -2,7 +2,6 @@ package cn.vove7.smartkey.annotation
 
 import com.russhwolf.settings.Settings
 import kotlin.reflect.KClass
-import kotlin.reflect.full.findAnnotation
 
 /**
  * # Config
@@ -13,15 +12,15 @@ import kotlin.reflect.full.findAnnotation
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Config(
-        val name: String = "",
-        val implCls: KClass<out Settings> = Settings::class
+    val name: String = "",
+    val implCls: KClass<out Settings> = Settings::class
 )
 
 /**
  * 反射获取类注解@Config(name)
  */
 fun parseConfigAnnotation(thisRef: Any): Config {
-    val it = thisRef::class.findAnnotation<Config>()
+    val it = thisRef::class.java.getAnnotation(Config::class.java)
     if (it != null) {
         return it
     }

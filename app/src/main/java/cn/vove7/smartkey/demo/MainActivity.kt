@@ -17,7 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     val lis: PrintListener = {
         log_text.append(it + "\n")
-        scrollView.smoothScrollTo(0, log_text.height + 100)
+        scrollView.postDelayed({
+            scrollView.smoothScrollTo(0, log_text.height + 100)
+        }, 10)
     }
 
     override fun onDestroy() {
@@ -94,6 +96,6 @@ class MainActivity : AppCompatActivity() {
     fun clearAndReload(view: View) {
         AppConfig.clear()
         finish()
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
     }
 }

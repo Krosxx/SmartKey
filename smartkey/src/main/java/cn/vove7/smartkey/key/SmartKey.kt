@@ -6,7 +6,6 @@ import cn.vove7.smartkey.tool.Vog
 import com.russhwolf.settings.Settings
 import java.util.*
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.declaredMemberProperties
 
 
 /**
@@ -19,9 +18,9 @@ import kotlin.reflect.full.declaredMemberProperties
  * @return SmartKey<T>
  */
 inline fun <reified T> smartKey(
-        defaultValue: T,
-        key: String? = null,
-        encrypt: Boolean = false
+    defaultValue: T,
+    key: String? = null,
+    encrypt: Boolean = false
 ): SmartKey<T> {
     return SmartKey(defaultValue, T::class.java, encrypt, key)
 }
@@ -34,10 +33,10 @@ inline fun <reified T> smartKey(
  * 2019/4/22
  */
 class SmartKey<T> constructor(
-        val defaultValue: T,
-        cls: Class<*>,
-        encrypt: Boolean = false,
-        key: String? = null
+    val defaultValue: T,
+    cls: Class<*>,
+    encrypt: Boolean = false,
+    key: String? = null
 ) : IKey(cls, encrypt, key) {
 
     /**
@@ -84,12 +83,19 @@ class SmartKey<T> constructor(
         private val keys = WeakHashMap<String, SmartKey<*>>()
 
         fun clearCache(config: BaseConfig) {
-            config::class.declaredMemberProperties.forEach {
-                //设置init标志
-                keys[it.name]?.apply {
-                    init = false
-                    value = null
-                }
+            try {
+                config::class.java.declaredFields
+                    .filter { it.type == SmartKey::class.java }
+                    .forEach {
+                        it.isAccessible = true
+                        //设置init标志
+                        (it.get(config) as SmartKey<*>).apply {
+                            init = false
+                            value = null
+                        }
+                    }
+            } catch (e: Throwable) {
+                System.err.println("SmartKey clear err: ${e.message}")
             }
         }
 
