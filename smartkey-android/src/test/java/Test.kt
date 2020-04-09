@@ -47,6 +47,9 @@ class Test {
         println(sl)
         println(sl!![0]::class.java)
 
+        println(JsonConfig.modelArr.contentToString())
+        JsonConfig.modelArr = arrayOf(JsonConfig.ListModel("arr", 3))
+        println(JsonConfig.modelArr.contentToString())
     }
 
     @Test
@@ -86,6 +89,7 @@ object JsonConfig : AConfig() {
     var strList by smartKeyList<String>(emptyList())
 
     var modelList by smartKeyList<ListModel>(emptyList())
+    var modelArr by smartKey<Array<ListModel>>(emptyArray())
 
     var modelSet by smartKeySet<ListModel>(emptySet())
 
