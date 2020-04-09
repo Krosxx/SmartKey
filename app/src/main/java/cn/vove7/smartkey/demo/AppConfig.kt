@@ -6,6 +6,7 @@ import cn.vove7.smartkey.android.AndroidSettings
 import cn.vove7.smartkey.android.noCacheKey
 import cn.vove7.smartkey.android.smartKey
 import cn.vove7.smartkey.annotation.Config
+import cn.vove7.smartkey.key.smartKeyList
 
 /**
  * # AppConfig
@@ -21,16 +22,20 @@ object AppConfig : AConfig() {
 
     //可空基础类型
     var nullableInt: Int? by smartKey(null)
-    var number: Int  by smartKey(50)
+    var number: Int by smartKey(50)
 
     //数组
     var intArr: Array<Int> by smartKey(emptyArray())
 
     //实体类
     var userInfo: UserInfo? by smartKey(null, encrypt = true)
+
+    //实体数组
+    var modelList: List<ListModel> by smartKeyList(emptyList())
 }
 
 data class UserInfo(
         val name: String
 )
 
+class ListModel(val s: String, val a: Int)

@@ -7,6 +7,8 @@ import cn.vove7.smartkey.key.get
 import cn.vove7.smartkey.key.set
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 /**
  * # BaseConfig
@@ -94,11 +96,17 @@ abstract class AConfig : BaseConfig {
      */
     inline operator fun <reified T> get(
             key: String,
-            defaultValue: T? = null,
+            defaultValue: T,
             encrypt: Boolean = false
-    ): T? {
+    ): T {
         return settings.get(key, defaultValue, T::class.java, encrypt)
             ?: defaultValue
+    }
+    inline operator fun <reified T> get(
+            key: String,
+            encrypt: Boolean = false
+    ): T? {
+        return settings.get(key, null, T::class.java, encrypt)
     }
 
 }

@@ -11,6 +11,7 @@ import cn.vove7.smartkey.tool.toJson
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
 import com.russhwolf.settings.minusAssign
+import java.lang.reflect.Type
 import kotlin.reflect.KClass
 
 /**
@@ -23,7 +24,7 @@ abstract class IKey(
         /**
          * 指定泛型class
          */
-        internal val cls: Class<*>,
+        internal val cls: Type,
 
         /**
          * 加密存储数据
@@ -89,11 +90,11 @@ abstract class IKey(
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T> Settings.get(key: String, defaultValue: T?, cls: Class<*>, encrypt: Boolean = false): T? {
+fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean = false): T? {
 
     if (key !in this) return defaultValue
 
-    return when (cls.simpleName) {//可空类型使用 SmartKey.auto()
+    return when (cls.let { if (it is Class<*>) it.simpleName else null }) {
         "Int", "Integer" -> {
             getInt(key, (defaultValue as Int?) ?: 0) as T
         }

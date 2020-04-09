@@ -37,7 +37,18 @@ object AppConfig {
 
     //实体类
     var userInfo: UserInfo? by smartKey(null, encrypt = true)
+    
+    //实体数组
+    var modelList by smartKeyList<ListModel>(emptyList())
+    //实体集
+    var modelSet by smartKeySet<ListModel>(emptySet())
+    //
+    var map by smartKeyMap<String, Int>()
+
 }
+
+//数组实体
+data class ListModel(val s: String, val a: Int)
 
 //实体类
 data class UserInfo(
@@ -91,7 +102,13 @@ AppConfig["text"] = "abc" //key, value
 "key" in AppConfig // is contains key
 AppConfig -= "key" // remove key
 
-val s = AppConfig["text", "default"]//key, default
+val s = AppConfig["text", "default"]
+
+//获取可空类型的值
+val strNullable: String? = JsonConfig["dont_exists_key"]
+val strNullableEnt: String? = JsonConfig["dont_exists_key"]
+//获取不可空值
+val strNotNull: String = JsonConfig["dont_exists_key", "def"] //key, default
 
 //普通存储
 AppConfig["key"] = 1

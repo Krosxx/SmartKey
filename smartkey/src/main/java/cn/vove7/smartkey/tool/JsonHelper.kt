@@ -4,6 +4,7 @@ import com.google.gson.ExclusionStrategy
 import com.google.gson.FieldAttributes
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
+import java.lang.reflect.Type
 
 /**
  * # JsonHelper
@@ -60,7 +61,7 @@ internal object JsonHelper {
         return builder.create().fromJson<T>(s, T::class.java)
     }
 
-    fun <T> fromJson(s: String?, cls: Class<*>): T? {
+    fun <T> fromJson(s: String?, cls: Type): T? {
         return builder.create().fromJson<T>(s, cls)
     }
 

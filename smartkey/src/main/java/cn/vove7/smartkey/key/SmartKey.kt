@@ -3,7 +3,10 @@ package cn.vove7.smartkey.key
 import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.tool.Vog
+import com.google.gson.reflect.TypeToken
 import com.russhwolf.settings.Settings
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import java.util.*
 import kotlin.reflect.KProperty
 
@@ -18,11 +21,54 @@ import kotlin.reflect.KProperty
  * @return SmartKey<T>
  */
 inline fun <reified T> smartKey(
-    defaultValue: T,
-    key: String? = null,
-    encrypt: Boolean = false
+        defaultValue: T,
+        key: String? = null,
+        encrypt: Boolean = false
 ): SmartKey<T> {
+    val type = T::class.java
+    if (List::class.java.isAssignableFrom(type)) {//数组类型
+        throw IllegalArgumentException("`by smartKey` don't support list type, please use `by smartKeyList<ModelType>()")
+    }
+    if (Map::class.java.isAssignableFrom(type)) {
+        throw IllegalArgumentException("`by smartKey` don't support map type, please use `by smartKeyList<ModelType>()")
+    }
+    if (Set::class.java.isAssignableFrom(type)) {
+        throw IllegalArgumentException("`by smartKey` don't support set type, please use `by smartKeyList<ModelType>()")
+    }
     return SmartKey(defaultValue, T::class.java, encrypt, key)
+}
+
+inline fun <reified M> smartKeyList(
+        defaultValue: List<M> = listOf(),
+        key: String? = null,
+        encrypt: Boolean = false
+): SmartKey<List<M>> {
+    return smartKeyCollectionTyped(defaultValue, key, encrypt)
+}
+
+inline fun <reified M> smartKeySet(
+        defaultValue: Set<M> = setOf(),
+        key: String? = null,
+        encrypt: Boolean = false
+): SmartKey<Set<M>> {
+    return smartKeyCollectionTyped(defaultValue, key, encrypt)
+}
+
+inline fun <reified K, reified T> smartKeyMap(
+        defaultValue: Map<K, T> = mapOf(),
+        key: String? = null,
+        encrypt: Boolean = false
+): SmartKey<Map<K, T>> {
+    val type = TypeToken.getParameterized(Map::class.java, K::class.java, T::class.java).type
+    return SmartKey(defaultValue, type, encrypt, key)
+}
+
+inline fun <reified CollectType : Collection<ItemType>, reified ItemType> smartKeyCollectionTyped(
+        defaultValue: CollectType,
+        key: String? = null,
+        encrypt: Boolean = false): SmartKey<CollectType> {
+    val type = TypeToken.getParameterized(CollectType::class.java, ItemType::class.java).type
+    return SmartKey(defaultValue, type, encrypt, key)
 }
 
 /**
@@ -33,10 +79,10 @@ inline fun <reified T> smartKey(
  * 2019/4/22
  */
 class SmartKey<T> constructor(
-    val defaultValue: T,
-    cls: Class<*>,
-    encrypt: Boolean = false,
-    key: String? = null
+        val defaultValue: T,
+        cls: Type,
+        encrypt: Boolean = false,
+        key: String? = null
 ) : IKey(cls, encrypt, key) {
 
     /**
