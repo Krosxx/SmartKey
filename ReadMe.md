@@ -7,6 +7,7 @@
 1. 支持纯Kotlin项目
 2. 支持Android项目
 3. 支持自定义持久化实现
+4. 空安全
 
 
 - [基本使用](#基本使用)
@@ -19,9 +20,12 @@
 
 #### 初始化
 
+
+这里可以使用注解 `@Config("app_config", implCls = ...)` 配置存储文件名，多个配置类可分文件存储。  
+**安卓项目可以不指明implCls，自动使用 `SharedPreference` 做存储；使用数据库需要适配，参考： [自定义持久化实现](#自定义持久化实现)**
+
 1. 定义配置类
 ```kotlin
-//这里可以使用注解配置存储文件名，多个配置类可分文件存储
 @Config("app_config", implCls = JsonSettings::class)
 object AppConfig {
 
@@ -38,11 +42,11 @@ object AppConfig {
     //实体类
     var userInfo: UserInfo? by smartKey(null, encrypt = true)
     
-    //实体数组
-    var modelList by smartKeyList<ListModel>(emptyList())
-    //实体集
+    //实体数组  [操作即更新]  默认空列表
+    var modelList by smartKeyList<ListModel>()
+    //实体集    [操作即更新]  默认空集
     var modelSet by smartKeySet<ListModel>(emptySet())
-    //
+    //         [操作即更新]
     var map by smartKeyMap<String, Int>()
 
 }
@@ -80,6 +84,10 @@ user.name = "hello"
 //需要赋值操作触发
 AppConfig.userInfo = user
 
+//操作 实时存储 无需显式赋值；需要注意避免循环 add， 可以使用addAll
+AppConfig.modelList.add(ListModel("string", 1))
+//set map 操作同 List 实时存储
+
 ```
 
 3. 配置类附加功能
@@ -92,10 +100,11 @@ object AppConfig : AConfig() {
 ```
 ```kotlin
 
-//清空此配置所有key
+// 清空此配置所有key
 AppConfig.clear()
 
-//直接存储key
+// 直接存储key
+// 注意使用此方式时，如果和 smartKey 变量key一致，此处赋值并不会更新 smartKey 中的缓存，需要同步可使用 `NoCacheKey`
 AppConfig["key"] = 1 //key, value
 AppConfig["text"] = "abc" //key, value
 
@@ -104,25 +113,27 @@ AppConfig -= "key" // remove key
 
 val s = AppConfig["text", "default"]
 
-//获取可空类型的值
+// 获取可空类型的值
 val strNullable: String? = JsonConfig["dont_exists_key"]
 val strNullableEnt: String? = JsonConfig["dont_exists_key"]
-//获取不可空值
+// 获取不可空值
 val strNotNull: String = JsonConfig["dont_exists_key", "def"] //key, default
 
-//普通存储
-AppConfig["key"] = 1
-//加密储存
-AppConfig["key", true] = 1  
+// 普通存储
+AppConfig["key"] = "value"
+// 加密储存
+AppConfig["key", true] = "value"
+// 获取解密后的数据
+val value :String? = AppConfig["key", true]
 
 
 //获取可空数据
-val user = AppConfig.get<UserInfo?>("userInfo", null)
-
-val user = AppConfig["userInfo", null as UserInfo?]
+val user :UserInfo? = AppConfig["userInfo"]
+// or
+val user = AppConfig.get<UserInfo?>("userInfo")
 
 //获取加密内容
-val user: UserInfo? = AppConfig["userInfo", null as UserInfo?, true] // ?
+val user: UserInfo? = AppConfig["userInfo", true] // ?
 
 ```
 
@@ -198,6 +209,7 @@ class AppConfig2 {
 使用文件存储。  
 可设置`baseDir` `FileSettings.baseDir = "..."`
 
+**其中 `JsonSettings` 和 `PropertiesSettings` 继承与 `BaseSyncFileSetting`，配置可随文件修改重新加载到内存。为达到此目的，你需要使用 `NoCacheKey` 来确保实时读取到的是修改后的配置**
 
 ### 自定义持久化实现
 

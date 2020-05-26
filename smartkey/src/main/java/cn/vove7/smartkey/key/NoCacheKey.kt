@@ -7,9 +7,9 @@ import kotlin.reflect.KProperty
 
 
 inline fun <reified T> noCacheKey(
-        defaultValue: T,
-        key: String? = null,
-        encrypt: Boolean = false
+    defaultValue: T,
+    key: String? = null,
+    encrypt: Boolean = false
 ): NoCacheKey<T> {
     val type = T::class.java
     if (List::class.java.isAssignableFrom(type)) {//数组类型
@@ -25,35 +25,36 @@ inline fun <reified T> noCacheKey(
 }
 
 inline fun <reified M> noCacheKeyList(
-        defaultValue: List<M> = listOf(),
-        key: String? = null,
-        encrypt: Boolean = false
-): NoCacheKey<List<M>> {
+    defaultValue: MutableList<M> = mutableListOf(),
+    key: String? = null,
+    encrypt: Boolean = false
+): NoCacheKey<MutableList<M>> {
     return noCacheKeyCollectionTyped(defaultValue, key, encrypt)
 }
 
 inline fun <reified M> noCacheKeySet(
-        defaultValue: Set<M> = setOf(),
-        key: String? = null,
-        encrypt: Boolean = false
-): NoCacheKey<Set<M>> {
+    defaultValue: MutableSet<M> = mutableSetOf(),
+    key: String? = null,
+    encrypt: Boolean = false
+): NoCacheKey<MutableSet<M>> {
     return noCacheKeyCollectionTyped(defaultValue, key, encrypt)
 }
 
 
 inline fun <reified K, reified T> noCacheKeyMap(
-        defaultValue: Map<K, T> = mapOf(),
-        key: String? = null,
-        encrypt: Boolean = false
-): NoCacheKey<Map<K, T>> {
+    defaultValue: MutableMap<K, T> = mutableMapOf(),
+    key: String? = null,
+    encrypt: Boolean = false
+): NoCacheKey<MutableMap<K, T>> {
     val type = TypeToken.getParameterized(Map::class.java, K::class.java, T::class.java).type
     return NoCacheKey(defaultValue, type, encrypt, key)
 }
 
 inline fun <reified CollectType : Collection<ItemType>, reified ItemType> noCacheKeyCollectionTyped(
-        defaultValue: CollectType,
-        key: String? = null,
-        encrypt: Boolean = false): NoCacheKey<CollectType> {
+    defaultValue: CollectType,
+    key: String? = null,
+    encrypt: Boolean = false
+): NoCacheKey<CollectType> {
     val type = TypeToken.getParameterized(CollectType::class.java, ItemType::class.java).type
     return NoCacheKey(defaultValue, type, encrypt, key)
 }
@@ -65,36 +66,36 @@ inline fun <reified CollectType : Collection<ItemType>, reified ItemType> noCach
  * 2019/6/19
  */
 open class NoCacheKey<T>(
-        private val defaultValue: T,
+    private val defaultValue: T,
 
-        /**
-         * 指定泛型class
-         */
-        cls: Type,
+    /**
+     * 指定泛型class
+     */
+    cls: Type,
 
-        /**
-         * 加密存储数据
-         */
-        encrypt: Boolean = false,
-        /**
-         * 自定义key
-         */
-        key: String? = null
+    /**
+     * 加密存储数据
+     */
+    encrypt: Boolean = false,
+    /**
+     * 自定义key
+     */
+    key: String? = null
 ) : IKey(cls, encrypt, key) {
 
     operator fun getValue(thisRef: Any?, p: KProperty<*>): T {
         initConfig(thisRef)
-        val k = key ?: p.name
-        val value = settings.get(k, defaultValue, cls, encrypt)
+        initKey(p.name)
+        val value = wrapValue(settings.get(internalKey, defaultValue, cls, encrypt))
         return value ?: defaultValue
     }
 
 
     operator fun setValue(thisRef: Any?, property: KProperty<*>, t: T) {
         initConfig(thisRef)
-        val k = key ?: property.name
-        Vog.d("设置值：$k = $t")
-        settings.set(k, t, encrypt)
+        initKey(property.name)
+        Vog.d("设置值：$internalKey = $t")
+        settings.set(internalKey, t, encrypt)
     }
 
 }

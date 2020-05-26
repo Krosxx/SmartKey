@@ -1,13 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.Vove7'
 
 android {
     compileSdkVersion 28
-
 
     defaultConfig {
         minSdkVersion 15
@@ -23,6 +19,7 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
+    implementation 'androidx.annotation:annotation:1.2.0-alpha01'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     api project(path: ':smartkey')

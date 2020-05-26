@@ -31,7 +31,7 @@ object AppConfig : AConfig() {
     var userInfo: UserInfo? by smartKey(null, encrypt = true)
 
     //实体数组
-    var modelList: List<ListModel> by smartKeyList(emptyList())
+    var modelList: MutableList<ListModel> by smartKeyList()
 }
 
 data class UserInfo(

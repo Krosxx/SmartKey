@@ -20,9 +20,6 @@ annotation class Config(
  * 反射获取类注解@Config(name)
  */
 fun parseConfigAnnotation(thisRef: Any): Config {
-    val it = thisRef::class.java.getAnnotation(Config::class.java)
-    if (it != null) {
-        return it
-    }
-    throw Exception("please annotate with @Config on class ${thisRef::class.simpleName}")
+    return thisRef::class.java.getAnnotation(Config::class.java)
+        ?: throw Exception("please annotate with @Config on class ${thisRef::class.simpleName}")
 }

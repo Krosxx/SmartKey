@@ -17,7 +17,7 @@ object AESEncryptor : Encryptor {
 
     init {
         val serialNo = getDeviceSerialNumber()
-        key = SHA(serialNo + "#\$ERDTS\$D%F^Gojikbh").substring(0, 16)
+        key = SHA("$serialNo#\$ERDTS\$D%F^Gojikbh").substring(0, 16)
     }
 
     private fun getDeviceSerialNumber(): String {
@@ -34,7 +34,7 @@ object AESEncryptor : Encryptor {
         // 返回值
         var strResult: String? = null
         // 是否是有效字符串
-        if (strText != null && strText.length > 0) {
+        if (!strText.isNullOrEmpty()) {
             try {
                 // SHA 加密开始
                 val messageDigest = MessageDigest.getInstance("SHA-256")
@@ -60,23 +60,23 @@ object AESEncryptor : Encryptor {
     }
 
 
-    override fun encrypt(plainText: String): String {
-        try {
+    override fun encrypt(content: String): String {
+        return try {
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             val keyspec = SecretKeySpec(key.toByteArray(), "AES")
             cipher.init(Cipher.ENCRYPT_MODE, keyspec)
-            val encrypted = cipher.doFinal(plainText.toByteArray())
-            return Base64.encodeToString(encrypted, Base64.NO_WRAP)
+            val encrypted = cipher.doFinal(content.toByteArray())
+            Base64.encodeToString(encrypted, Base64.NO_WRAP)
         } catch (e: Exception) {
             e.printStackTrace()
-            return plainText
+            content
         }
 
     }
 
-    override fun decrypt(cipherText: String): String {
+    override fun decrypt(content: String): String {
         return try {
-            val encrypted1 = Base64.decode(cipherText, Base64.NO_WRAP)
+            val encrypted1 = Base64.decode(content, Base64.NO_WRAP)
             val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
             val keyspec = SecretKeySpec(key.toByteArray(), "AES")
             cipher.init(Cipher.DECRYPT_MODE, keyspec)
@@ -84,8 +84,7 @@ object AESEncryptor : Encryptor {
             String(original)
         } catch (e: Exception) {
             e.printStackTrace()
-            cipherText
+            content
         }
-
     }
 }

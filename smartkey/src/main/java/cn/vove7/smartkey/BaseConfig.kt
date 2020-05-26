@@ -2,13 +2,12 @@ package cn.vove7.smartkey
 
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
+import cn.vove7.smartkey.key.IKey
 import cn.vove7.smartkey.key.SmartKey
 import cn.vove7.smartkey.key.get
 import cn.vove7.smartkey.key.set
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 /**
  * # BaseConfig
@@ -51,7 +50,7 @@ interface BaseConfig {
      * Settings实例
      * 使用缓存
      */
-    val settings: Settings get() = SmartKey.getSettingsFromCache(config, this)
+    val settings: Settings get() = IKey.getSettingsFromCache(config, this)
 }
 
 /**
@@ -59,6 +58,8 @@ interface BaseConfig {
  * Config["..."] = ...
  * val a = Config["...", default]
  */
+typealias SConfig = AConfig
+
 abstract class AConfig : BaseConfig {
 
     /**
@@ -71,9 +72,9 @@ abstract class AConfig : BaseConfig {
      * ```
      */
     operator fun set(
-            key: String,
-            encrypt: Boolean = false,
-            value: Any?
+        key: String,
+        encrypt: Boolean = false,
+        value: Any?
     ) {
         set(key, value, encrypt)
     }
@@ -84,8 +85,9 @@ abstract class AConfig : BaseConfig {
      * val s = Config["key", "abc"] //  s: String
      *
      * //获取可空数据
-     * 1. val user = AppConfig.get<UserInfo?>("userInfo", null)
-     * 2. val user = AppConfig["userInfo", null as UserInfo?]
+     * 1. val user2 :UserInfo?= AppConfig["userInfo"]
+     * 2. val user = AppConfig.get<UserInfo?>("userInfo")
+     * 3. val user = AppConfig["userInfo", null as UserInfo?]
      *
      * //获得加密内容
      * val s = Config["key", "..", true]
@@ -95,16 +97,17 @@ abstract class AConfig : BaseConfig {
      * @return T
      */
     inline operator fun <reified T> get(
-            key: String,
-            defaultValue: T,
-            encrypt: Boolean = false
+        key: String,
+        defaultValue: T,
+        encrypt: Boolean = false
     ): T {
         return settings.get(key, defaultValue, T::class.java, encrypt)
             ?: defaultValue
     }
+
     inline operator fun <reified T> get(
-            key: String,
-            encrypt: Boolean = false
+        key: String,
+        encrypt: Boolean = false
     ): T? {
         return settings.get(key, null, T::class.java, encrypt)
     }

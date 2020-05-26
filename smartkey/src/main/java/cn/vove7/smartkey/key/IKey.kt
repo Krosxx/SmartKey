@@ -3,6 +3,9 @@ package cn.vove7.smartkey.key
 import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
+import cn.vove7.smartkey.collections.ObserveableList
+import cn.vove7.smartkey.collections.ObserveableMap
+import cn.vove7.smartkey.collections.ObserveableSet
 import cn.vove7.smartkey.settings.JsonSettings
 import cn.vove7.smartkey.tool.JsonHelper
 import cn.vove7.smartkey.tool.Vog
@@ -12,6 +15,7 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.contains
 import com.russhwolf.settings.minusAssign
 import java.lang.reflect.Type
+import java.util.*
 import kotlin.reflect.KClass
 
 /**
@@ -21,20 +25,27 @@ import kotlin.reflect.KClass
  * 2019/6/19
  */
 abstract class IKey(
-        /**
-         * 指定泛型class
-         */
-        internal val cls: Type,
+    /**
+     * 指定泛型class
+     */
+    internal val cls: Type,
 
-        /**
-         * 加密存储数据
-         */
-        internal val encrypt: Boolean = false,
-        /**
-         * 自定义key
-         */
-        internal val key: String? = null
+    /**
+     * 加密存储数据
+     */
+    internal val encrypt: Boolean = false,
+    /**
+     * 自定义key
+     */
+    internal val key: String? = null
 ) {
+
+    internal lateinit var internalKey: String
+
+    internal fun initKey(k: String) {
+        internalKey = key ?: k
+    }
+
     class MyConfig(config: Config, thisRef: Any) {
         val name: String = config.name.let {
             if (it.isEmpty()) thisRef::class.java.simpleName?.toLowerCase()
@@ -45,6 +56,27 @@ abstract class IKey(
 
     lateinit var config: MyConfig
 
+    val settings: Settings get() = getSettingsFromCache(config)
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> wrapValue(value: T?): T? = when (value) {
+        is MutableMap<*, *> -> {
+            ObserveableMap(value) {
+                settings.set(internalKey, value, encrypt)
+            } as T
+        }
+        is MutableList<*> -> {
+            ObserveableList(value) {
+                settings.set(internalKey, value, encrypt)
+            } as T
+        }
+        is MutableSet<*> -> {
+            ObserveableSet(value) {
+                settings.set(internalKey, value, encrypt)
+            } as T
+        }
+        else -> value
+    }
 
     @Synchronized
     fun initConfig(thisRef: Any?) {
@@ -53,18 +85,20 @@ abstract class IKey(
                 "请在类中属性使用"
                 //反射获取类注解@Config(name)
             }
-            config = MyConfig(if (thisRef is BaseConfig) {
-                thisRef.config
-            } else parseConfigAnnotation(thisRef), thisRef)
+            config = MyConfig(
+                if (thisRef is BaseConfig) {
+                    thisRef.config
+                } else parseConfigAnnotation(thisRef), thisRef
+            )
             Vog.d("初始化配置：${config.name} ${config.implCls.java.simpleName}")
         }
     }
 
-    val settings: Settings by lazy { getSettingsImpl(config) }
 
     companion object {
 
         val DEFAULT_CONFIG_NAME = "config"
+
         /**
          * 默认存储实现
          */
@@ -84,6 +118,24 @@ abstract class IKey(
         val MyConfig.parseImplCls: KClass<out Settings>
             get() = if (implCls == Settings::class) DEFAULT_SETTING_IMPL_CLS
             else implCls
+
+        /**
+         * WeakHashMap缓存
+         *
+         * 配置名 -> Settings
+         */
+        private val settingsCache = WeakHashMap<String, Settings>()
+
+        /**
+         * 从缓存获取
+         * @return Settings
+         */
+        fun getSettingsFromCache(config: MyConfig): Settings =
+            settingsCache.getOrPut(config.name) { getSettingsImpl(config) }
+
+        fun getSettingsFromCache(config: Config, thisRef: Any): Settings =
+            settingsCache.getOrPut(config.name) { getSettingsImpl(MyConfig(config, thisRef)) }
+
 
     }
 
@@ -118,7 +170,7 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean 
         else -> {//数组, 实体类
             try {
                 val value = getString(
-                        if (encrypt) AESEncryptor.encryptKey(key) else key
+                    if (encrypt) AESEncryptor.encryptKey(key) else key
                 ).let {
                     if (encrypt) AESEncryptor.decrypt(it)
                     else it

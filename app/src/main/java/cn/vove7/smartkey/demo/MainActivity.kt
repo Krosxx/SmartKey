@@ -43,7 +43,10 @@ class MainActivity : AppCompatActivity() {
          */
         val s = AppConfig["text", "de"]//key, default
 
-        val user = AppConfig.get<UserInfo?>("userInfo", null)
+        val user = AppConfig.get<UserInfo?>("userInfo")
+
+        val user2: UserInfo? = AppConfig["userInfo"]
+        val user3: UserInfo? = AppConfig["userInfo", true]
 
         Vog.d("app2[text] : $s")
 

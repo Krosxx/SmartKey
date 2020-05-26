@@ -26,15 +26,15 @@ class Test {
             println(list[0].a)
         }
 
-        JsonConfig.modelList = listOf(JsonConfig.ListModel("a", 1), JsonConfig.ListModel("b", 2))
+        JsonConfig.modelList = mutableListOf(JsonConfig.ListModel("a", 1), JsonConfig.ListModel("b", 2))
         println(JsonConfig.modelList)
 
         println(JsonConfig.modelSet)
-        JsonConfig.modelSet = setOf(JsonConfig.ListModel("s", 2), JsonConfig.ListModel("ss", 2))
+        JsonConfig.modelSet = mutableSetOf(JsonConfig.ListModel("s", 2), JsonConfig.ListModel("ss", 2))
         println(JsonConfig.modelSet)
 
         println(JsonConfig.map)
-        JsonConfig.map = mapOf("a" to 1, "b" to 2)
+        JsonConfig.map = mutableMapOf("a" to 1, "b" to 2)
         println(JsonConfig.map)
 
         //
@@ -86,12 +86,12 @@ object JsonConfig : AConfig() {
 
     var model: Model? by smartKey(null, encrypt = true)
 
-    var strList by smartKeyList<String>(emptyList())
+    var strList by smartKeyList<String>()
 
-    var modelList by smartKeyList<ListModel>(emptyList())
+    var modelList by smartKeyList<ListModel>()
     var modelArr by smartKey<Array<ListModel>>(emptyArray())
 
-    var modelSet by smartKeySet<ListModel>(emptySet())
+    var modelSet by smartKeySet<ListModel>()
 
     var map by smartKeyMap<String, Int>()
 
