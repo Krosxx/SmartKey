@@ -1,8 +1,8 @@
 package cn.vove7.smartkey.android
 
 import androidx.annotation.StringRes
-import cn.vove7.smartkey.AConfig
 import cn.vove7.smartkey.BaseConfig
+import cn.vove7.smartkey.get
 import cn.vove7.smartkey.key.set
 import com.russhwolf.settings.contains
 
@@ -31,7 +31,7 @@ operator fun BaseConfig.contains(
 ): Boolean = AndroidSettings.s(keyId) in settings
 
 
-inline operator fun <reified T> AConfig.get(
+inline operator fun <reified T> BaseConfig.get(
     @StringRes keyId: Int,
     defaultValue: T,
     encrypt: Boolean = false
@@ -39,7 +39,7 @@ inline operator fun <reified T> AConfig.get(
     return get(AndroidSettings.s(keyId), defaultValue, encrypt)
 }
 
-inline operator fun <reified T> AConfig.get(
+inline operator fun <reified T> BaseConfig.get(
     @StringRes keyId: Int,
     encrypt: Boolean = false
 ): T? {

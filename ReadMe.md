@@ -8,6 +8,7 @@
 2. 支持Android项目
 3. 支持自定义持久化实现
 4. 空安全
+5. 配置动态监听
 
 
 - [基本使用](#基本使用)
@@ -20,12 +21,12 @@
 
 #### 初始化
 
-
 这里可以使用注解 `@Config("app_config", implCls = ...)` 配置存储文件名，多个配置类可分文件存储。  
-**安卓项目可以不指明implCls，自动使用 `SharedPreference` 做存储；使用数据库需要适配，参考： [自定义持久化实现](#自定义持久化实现)**
+**安卓项目可以无需指明implCls，自动使用 `SharedPreference` 做存储；使用数据库需要适配，参考： [自定义持久化实现](#自定义持久化实现)**
 
 1. 定义配置类
 ```kotlin
+//注解非必须，不加注解，会使用默认配置路径，和默认存储实现
 @Config("app_config", implCls = JsonSettings::class)
 object AppConfig {
 
@@ -92,9 +93,9 @@ AppConfig.modelList.add(ListModel("string", 1))
 
 3. 配置类附加功能
 
-继承`AConfig`拥有配置类基础操作
+继承`BaseConfig`拥有配置类基础操作
 ```kotlin
-object AppConfig : AConfig() {
+object AppConfig : BaseConfig {
     //...
 }
 ```
@@ -104,25 +105,21 @@ object AppConfig : AConfig() {
 AppConfig.clear()
 
 // 直接存储key
-// 注意使用此方式时，如果和 smartKey 变量key一致，此处赋值并不会更新 smartKey 中的缓存，需要同步可使用 `NoCacheKey`
 AppConfig["key"] = 1 //key, value
 AppConfig["text"] = "abc" //key, value
 
+// 加密储存(目前只支持String及实体类型加密)
+AppConfig["key", true] = "value"
 "key" in AppConfig // is contains key
 AppConfig -= "key" // remove key
 
-val s = AppConfig["text", "default"]
-
 // 获取可空类型的值
-val strNullable: String? = JsonConfig["dont_exists_key"]
-val strNullableEnt: String? = JsonConfig["dont_exists_key"]
-// 获取不可空值
-val strNotNull: String = JsonConfig["dont_exists_key", "def"] //key, default
+val strNullable: String? = AppConfig["dont_exists_key"]
 
-// 普通存储
-AppConfig["key"] = "value"
-// 加密储存
-AppConfig["key", true] = "value"
+//提供默认值 以获取不可空值
+val s :String = AppConfig["text", "default"] //key, default
+
+
 // 获取解密后的数据
 val value :String? = AppConfig["key", true]
 
@@ -133,7 +130,7 @@ val user :UserInfo? = AppConfig["userInfo"]
 val user = AppConfig.get<UserInfo?>("userInfo")
 
 //获取加密内容
-val user: UserInfo? = AppConfig["userInfo", true] // ?
+val user: UserInfo? = AppConfig["userInfo", true]
 
 ```
 
@@ -147,13 +144,24 @@ val user: UserInfo? = AppConfig["userInfo", true] // ?
 
 - 你可以指定变量对应存储的key：
 ```kotlin
-    //指定key 
+object AppConfig2 : BaseConfig {    //指定key 
     //import cn.vove7.smartkey.smartKey
     var text: String by smartKey("defaultValue", key = "your_key")
-    
+
+    var textWithKey: String by smartKey("aaa", key="text_key")
+
     //安卓项目可通过resId指定keyId
     //import cn.vove7.smartkey.android.smartKey
     var textAndroid: String by smartKey("defaultValue", keyId = R.string.key)
+}
+```
+
+- key 动态绑定
+
+```kotlin
+print(AppConfig2.textWithKey) //aaa
+AppConfig2["text_key"] = "bbb"
+print(AppConfig2.textWithKey) //bbb
 ```
 
 - 选择是否加密数据：
@@ -186,19 +194,18 @@ class AppConfig2 {
 由于`SmartKey`会对value进行缓存，在多进程会存在问题。因此而生的`NoCacheKey`，保证读取的数据是实时的。
 使用和SmartKey基本一致。
 
-另外，在使用基于文件存储的Settings时，修改文件配置`NoCacheKey`可以监听文件变化，来载入最新配置。
+另外，在使用基于文件存储的Settings时，修改文件配置后，`NoCacheKey`可以监听文件变化，来载入最新配置。
 
 ```kotlin
     var text: String by noCacheKey("defaultValue", key = "your_key")
 ```
-
 
 ### 基本存储实现
 
 - JsonSettings
 
 使用json格式存储配置。
- 
+
 - PropertiesSettings
 
 基于java `PropertiesSettings`持久化  
@@ -254,27 +261,13 @@ dependencies {
 ```
 
 - Android
- 
+
 ```groovy
 dependencies {
     implementation "com.github.Vove7.SmartKey:smartkey-android:$lastest_version"
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
-
-
-### 值得注意的地方
-
-```kotlin
-@Config("app_config", implCls = JsonSettings::class)
-object AppConfig {
-    var text: String by smartKey("value", key = "text_key")
-}
-```
-在使用 `AppConfig -= "text_key"` 或 `AppConfig["text_key"] = "new_value"` 移除或更新`text_key`之后，由于smartKey存在缓存机制，下次获取仍会取到缓存值，为避免这种情况，请使用`noCacheKey`。
-
-另外，`AppConfig.clear()`方法是支持清除使用SmartKey进行委托的值缓存。
-
 
 ### TODO
 

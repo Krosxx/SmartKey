@@ -13,6 +13,7 @@ import kotlin.concurrent.thread
  * 2019/9/18
  */
 fun main() {
+    println("等待将文件配置改为 0")
     JsonFileConfig.a = 1
     val jt = thread {
         var a = JsonFileConfig.a

@@ -1,6 +1,5 @@
 package cn.vove7.smartkey.key
 
-import cn.vove7.smartkey.BaseConfig
 import cn.vove7.smartkey.tool.Vog
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -122,11 +121,13 @@ class SmartKey<T> constructor(
 
     private var init = false
 
+    private val cacheKey get() = buildCacheKey(config.name, internalKey)
+
     operator fun getValue(thisRef: Any?, p: KProperty<*>): T {
         initConfig(thisRef)
         initKey(p.name)
         if (!init) {
-            keys[p.name] = this
+            keys[cacheKey] = this
             value = wrapValue(settings.get(internalKey, defaultValue, cls, encrypt))
             Vog.d("初始化值：$internalKey : $value")
         }
@@ -138,7 +139,7 @@ class SmartKey<T> constructor(
         initConfig(thisRef)
         initKey(property.name)
         if (!init) {
-            keys[property.name] = this
+            keys[cacheKey] = this
         }
         init = true
         Vog.d("设置值：$internalKey = $t")
@@ -148,22 +149,22 @@ class SmartKey<T> constructor(
 
     companion object {
 
-        //property name to SmartKey
+        // [config_name-property_name] to SmartKey
         private val keys = WeakHashMap<String, SmartKey<*>>()
 
-        fun clearCache(config: BaseConfig) = try {
-            config::class.java.declaredFields
-                .filter { it.type == SmartKey::class.java }
-                .forEach {
-                    it.isAccessible = true
-                    //设置init标志
-                    (it.get(config) as SmartKey<*>).apply {
-                        init = false
-                        value = null
-                    }
-                }
-        } catch (e: Throwable) {
-            System.err.println("SmartKey clear err: ${e.message}")
+        fun clearCache(config: KeyConfig) =
+            keys.filter { (k, v) -> k.startsWith("${config.name}-") }
+                .forEach { (k, v) ->
+                v.init = false
+            }
+
+        fun refresh(configName: String, key: String) {
+            keys[buildCacheKey(configName, key)]?.also {
+                Vog.d("刷新SmartKey缓存：${it.cacheKey}")
+                it.init = false
+            }
         }
+
+        private fun buildCacheKey(configName: String, key: String): String = "$configName-$key"
     }
 }

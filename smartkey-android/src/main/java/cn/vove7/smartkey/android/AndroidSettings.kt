@@ -20,12 +20,12 @@ import kotlin.reflect.KClass
  * @return SmartKey<T>
  */
 inline fun <reified T> smartKey(
-        defaultValue: T,
-        keyId: Int? = null,
-        encrypt: Boolean = false
+    defaultValue: T,
+    keyId: Int? = null,
+    encrypt: Boolean = false
 ): SmartKey<T> {
     val k = keyId?.let { context.getString(it) }
-    return SmartKey(defaultValue, T::class.java, encrypt, k)
+    return smartKey(defaultValue, k, encrypt)
 }
 
 /**
@@ -38,12 +38,12 @@ inline fun <reified T> smartKey(
  * @return NoCacheKey<T>
  */
 inline fun <reified T> noCacheKey(
-        defaultValue: T,
-        keyId: Int? = null,
-        encrypt: Boolean = false
+    defaultValue: T,
+    keyId: Int? = null,
+    encrypt: Boolean = false
 ): NoCacheKey<T> {
     val k = keyId?.let { context.getString(it) }
-    return NoCacheKey(defaultValue, T::class.java, encrypt, k)
+    return noCacheKey(defaultValue, k, encrypt)
 }
 
 /**

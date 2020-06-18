@@ -1,5 +1,6 @@
 package cn.vove7.smartkey.annotation
 
+import cn.vove7.smartkey.key.KeyConfig
 import com.russhwolf.settings.Settings
 import kotlin.reflect.KClass
 
@@ -19,7 +20,8 @@ annotation class Config(
 /**
  * 反射获取类注解@Config(name)
  */
-fun parseConfigAnnotation(thisRef: Any): Config {
-    return thisRef::class.java.getAnnotation(Config::class.java)
-        ?: throw Exception("please annotate with @Config on class ${thisRef::class.simpleName}")
+fun parseConfigAnnotation(thisRef: Any): KeyConfig {
+    return thisRef::class.java.getAnnotation(Config::class.java).let {
+        KeyConfig(it, thisRef)
+    }
 }

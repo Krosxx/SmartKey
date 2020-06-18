@@ -12,17 +12,17 @@ import java.io.File
  * @author Vove
  * 2019/7/25
  */
-class JsonSettings(private val configName: String) : BaseSyncFileSetting() {
+class JsonSettings(configName: String) : BaseSyncFileSetting() {
 
-    override val configFile: File
-        get() = File(configPath, fileName)
+    override val configFile: File by lazy { File(configPath, fileName) }
+
     lateinit var map: ObserveableMap<String, Any>
 
     companion object {
         var CONFIG_DIR: String? = null
     }
 
-    val configPath = if (CONFIG_DIR == null) {
+    private val configPath = if (CONFIG_DIR == null) {
         "config"
     } else {
         "$CONFIG_DIR/config"
@@ -47,17 +47,15 @@ class JsonSettings(private val configName: String) : BaseSyncFileSetting() {
                 mutableMapOf()
             }
         }
-        map = ObserveableMap(jmap, ::sync)
+        map = ObserveableMap(jmap, ::syncToFile)
         Vog.d("onReloadConfig $map")
     }
 
-    private fun sync() {
-        val f = File(configPath, fileName)
-        f.writeText(map.toJson(true))
-        lastSync = f.lastModified()
+    override fun doSyncToFile() {
+        configFile.writeText(map.toJson(true))
     }
 
-    override fun clear() {
+    override fun doClear() {
         map.clear()
     }
 

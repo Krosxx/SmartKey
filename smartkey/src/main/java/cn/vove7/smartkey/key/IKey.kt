@@ -1,7 +1,5 @@
 package cn.vove7.smartkey.key
 
-import cn.vove7.smartkey.BaseConfig
-import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.annotation.parseConfigAnnotation
 import cn.vove7.smartkey.collections.ObserveableList
 import cn.vove7.smartkey.collections.ObserveableMap
@@ -43,18 +41,12 @@ abstract class IKey(
     internal lateinit var internalKey: String
 
     internal fun initKey(k: String) {
-        internalKey = key ?: k
-    }
-
-    class MyConfig(config: Config, thisRef: Any) {
-        val name: String = config.name.let {
-            if (it.isEmpty()) thisRef::class.java.simpleName?.toLowerCase()
-                ?: DEFAULT_CONFIG_NAME else it
+        if (!::internalKey.isInitialized) {
+            internalKey = key ?: k
         }
-        val implCls = config.implCls
     }
 
-    lateinit var config: MyConfig
+    lateinit var config: KeyConfig
 
     val settings: Settings get() = getSettingsFromCache(config)
 
@@ -85,11 +77,8 @@ abstract class IKey(
                 "请在类中属性使用"
                 //反射获取类注解@Config(name)
             }
-            config = MyConfig(
-                if (thisRef is BaseConfig) {
-                    thisRef.config
-                } else parseConfigAnnotation(thisRef), thisRef
-            )
+            config = parseConfigAnnotation(thisRef)
+
             Vog.d("初始化配置：${config.name} ${config.implCls.java.simpleName}")
         }
     }
@@ -108,14 +97,14 @@ abstract class IKey(
                 else -> JsonSettings::class
             }
 
-        fun getSettingsImpl(config: MyConfig): Settings {
+        fun getSettingsImpl(config: KeyConfig): Settings {
             val con = config.parseImplCls.java.getConstructor(String::class.java)
                 ?: throw Exception("Settings实现类必须有String的构造函数")
 
             return con.newInstance(config.name)
         }
 
-        val MyConfig.parseImplCls: KClass<out Settings>
+        val KeyConfig.parseImplCls: KClass<out Settings>
             get() = if (implCls == Settings::class) DEFAULT_SETTING_IMPL_CLS
             else implCls
 
@@ -130,12 +119,12 @@ abstract class IKey(
          * 从缓存获取
          * @return Settings
          */
-        fun getSettingsFromCache(config: MyConfig): Settings =
-            settingsCache.getOrPut(config.name) { getSettingsImpl(config) }
-
-        fun getSettingsFromCache(config: Config, thisRef: Any): Settings =
-            settingsCache.getOrPut(config.name) { getSettingsImpl(MyConfig(config, thisRef)) }
-
+        fun getSettingsFromCache(config: KeyConfig): Settings =
+            settingsCache.getOrPut(config.name + "-" + config.implCls.simpleName) {
+                getSettingsImpl(
+                    config
+                )
+            }
 
     }
 

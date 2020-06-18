@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import cn.vove7.smartkey.R
+import cn.vove7.smartkey.get
 import cn.vove7.smartkey.tool.PrintListener
 import cn.vove7.smartkey.tool.Vog
 import kotlinx.android.synthetic.main.activity_main.*

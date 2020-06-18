@@ -21,8 +21,9 @@ class PropertiesSettings(private val configName: String) : BaseSyncFileSetting()
 
     private val prefix get() = if (baseDir != null) "$baseDir/properties" else "properties"
 
-    override val configFile
-        get() = File("$prefix/$configName.properties")
+    override val configFile by lazy {
+        File("$prefix/$configName.properties")
+    }
 
     private lateinit var properties: Properties
 
@@ -42,7 +43,7 @@ class PropertiesSettings(private val configName: String) : BaseSyncFileSetting()
         }
     }
 
-    override fun clear() {
+    override fun doClear() {
         properties.clear()
         syncToFile()
     }
@@ -60,9 +61,8 @@ class PropertiesSettings(private val configName: String) : BaseSyncFileSetting()
         syncToFile()
     }
 
-    private fun syncToFile() {
+    override fun doSyncToFile() {
         properties.store(FileOutputStream(configFile), null)
-        lastSync = System.currentTimeMillis()
     }
 
 

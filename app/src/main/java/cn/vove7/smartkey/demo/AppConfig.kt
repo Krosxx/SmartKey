@@ -18,7 +18,7 @@ import cn.vove7.smartkey.key.smartKeyList
 object AppConfig : AConfig() {
 
     //基本类型存储
-    var text: String by noCacheKey("a", keyId = R.string.key_text)
+    var text: String by smartKey("a", keyId = R.string.key_text)
 
     //可空基础类型
     var nullableInt: Int? by smartKey(null)

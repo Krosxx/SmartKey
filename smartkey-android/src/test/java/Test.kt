@@ -1,11 +1,10 @@
 import cn.vove7.smartkey.AConfig
 import cn.vove7.smartkey.annotation.Config
+import cn.vove7.smartkey.get
 import cn.vove7.smartkey.key.*
 import cn.vove7.smartkey.settings.FileSettings
 import cn.vove7.smartkey.settings.JsonSettings
 import cn.vove7.smartkey.tool.Vog
-import com.google.gson.JsonObject
-import com.google.gson.internal.LinkedTreeMap
 import org.junit.Test
 
 class Test {

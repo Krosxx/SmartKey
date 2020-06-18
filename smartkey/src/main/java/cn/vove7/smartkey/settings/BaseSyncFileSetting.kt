@@ -8,16 +8,40 @@ import java.io.File
  * # BaseSyncFileSetting
  * 同步文件 （内容修改时，同步配置）
  * 需要 by nocacheKey
+ * get 前无需 syncFile 因为会优先调用 hasKey
  * @author Vove
  * 2019/9/18
  */
 abstract class BaseSyncFileSetting : Settings {
-    //使用 get
+    //使用 by lazy
     abstract val configFile: File
 
     abstract fun onReloadConfig(cf: File)
 
     var lastSync = -1L
+
+    /**
+     * 同步配置到文件
+     */
+    abstract fun doSyncToFile()
+
+    fun syncToFile() {
+        doSyncToFile()
+        lastSync = configFile.lastModified()
+    }
+
+    /**
+     * 同步文件配置到内存
+     */
+    private fun syncConfig() {
+        val cf = configFile
+        val fl = cf.lastModified()
+        if (fl > lastSync) {
+            Vog.d("lastSync: $lastSync sync: $fl")
+            onReloadConfig(cf)
+            lastSync = fl
+        }
+    }
 
     abstract fun hasKey_(key: String): Boolean
     abstract fun putInt_(key: String, value: Int)
@@ -26,6 +50,14 @@ abstract class BaseSyncFileSetting : Settings {
     abstract fun putFloat_(key: String, value: Float)
     abstract fun putDouble_(key: String, value: Double)
     abstract fun putBoolean_(key: String, value: Boolean)
+    abstract fun doClear()
+
+    final override fun clear() {
+        syncConfig()
+        doClear()
+        syncToFile()
+        lastSync = configFile.lastModified()
+    }
 
     final override fun putInt(key: String, value: Int) {
         syncConfig()
@@ -61,16 +93,6 @@ abstract class BaseSyncFileSetting : Settings {
     final override fun hasKey(key: String): Boolean {
         syncConfig()
         return hasKey_(key)
-    }
-
-    private fun syncConfig() {
-        val cf = configFile
-        val fl = cf.lastModified()
-        if (fl > lastSync) {
-            Vog.d("lastSync: $lastSync sync: $fl")
-            onReloadConfig(cf)
-            lastSync = fl
-        }
     }
 
 }
