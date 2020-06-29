@@ -2,6 +2,7 @@ package cn.vove7.smartkey.key
 
 import cn.vove7.smartkey.tool.Vog
 import com.google.gson.reflect.TypeToken
+import java.lang.ref.WeakReference
 import java.lang.reflect.Type
 import java.util.*
 import kotlin.reflect.KProperty
@@ -127,7 +128,7 @@ class SmartKey<T> constructor(
         initConfig(thisRef)
         initKey(p.name)
         if (!init) {
-            keys[cacheKey] = this
+            keys[cacheKey] = WeakReference<SmartKey<*>>(this)
             value = wrapValue(settings.get(internalKey, defaultValue, cls, encrypt))
             Vog.d("初始化值：$internalKey : $value")
         }
@@ -139,7 +140,7 @@ class SmartKey<T> constructor(
         initConfig(thisRef)
         initKey(property.name)
         if (!init) {
-            keys[cacheKey] = this
+            keys[cacheKey] = WeakReference<SmartKey<*>>(this)
         }
         init = true
         Vog.d("设置值：$internalKey = $t")
@@ -150,18 +151,18 @@ class SmartKey<T> constructor(
     companion object {
 
         // [config_name-property_name] to SmartKey
-        private val keys = WeakHashMap<String, SmartKey<*>>()
+        private val keys = HashMap<String, WeakReference<SmartKey<*>>>()
 
         fun clearCache(config: KeyConfig) =
             keys.filter { (k, v) -> k.startsWith("${config.name}-") }
-                .forEach { (k, v) ->
-                v.init = false
-            }
+                .forEach { (k, wr) ->
+                    wr.get()?.init = false
+                }
 
         fun refresh(configName: String, key: String) {
-            keys[buildCacheKey(configName, key)]?.also {
-                Vog.d("刷新SmartKey缓存：${it.cacheKey}")
-                it.init = false
+            keys[buildCacheKey(configName, key)]?.also { wr ->
+                Vog.d("刷新SmartKey缓存：${wr.get()?.cacheKey}")
+                wr.get()?.init = false
             }
         }
 
