@@ -23,7 +23,7 @@ fun BaseConfig.set(
     value: Any?,
     encrypt: Boolean = false
 ) {
-    settings.set(AndroidSettings.s(keyId), value, encrypt)
+    set(AndroidSettings.s(keyId), value, encrypt)
 }
 
 operator fun BaseConfig.contains(
@@ -44,4 +44,12 @@ inline operator fun <reified T> BaseConfig.get(
     encrypt: Boolean = false
 ): T? {
     return get(AndroidSettings.s(keyId), encrypt)
+}
+
+operator fun BaseConfig.set(
+    @StringRes keyId: Int,
+    encrypt: Boolean = false,
+    value: Any?
+) {
+    set(AndroidSettings.s(keyId), encrypt, value)
 }

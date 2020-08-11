@@ -271,6 +271,16 @@ dependencies {
 
 ### TODO
 
+- DynamicKey
+
+this key can reset to 0 everyday:
+
+```kotlin
+val dk by synamicKey(0) {  
+    SimpleDateFormat("yyyy-MM-dd").format(Date()) + "_today_xxx_count"
+}
+```
+
 - ExpirableKey
 
 
@@ -278,4 +288,4 @@ dependencies {
 
 - [Kotlin](https://kotlinlang.org/)
 - 底层存储使用[multiplatform-settings](https://github.com/russhwolf/multiplatform-settings)
-- [FastJson](https://github.com/alibaba/fastjson)
+- [Gson](https://github.com/googlo/gson)

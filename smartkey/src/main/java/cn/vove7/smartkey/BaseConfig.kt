@@ -37,12 +37,14 @@ interface BaseConfig {
 
     /**
      * 设置值
+     * 刷新smartkey缓存
      * @param key String
      * @param value Any?
      * @param encrypt Boolean
      */
     fun set(key: String, value: Any?, encrypt: Boolean = false) {
         settings.set(key, value, encrypt)
+        SmartKey.refresh(config.name, key)
     }
 
     operator fun contains(key: String): Boolean = key in settings
@@ -71,7 +73,6 @@ interface BaseConfig {
         value: Any?
     ) {
         set(key, value, encrypt)
-        SmartKey.refresh(config.name, key)
     }
 
 }
