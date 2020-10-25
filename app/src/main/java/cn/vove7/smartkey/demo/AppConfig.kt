@@ -3,7 +3,6 @@ package cn.vove7.smartkey.demo
 import cn.vove7.smartkey.AConfig
 import cn.vove7.smartkey.R
 import cn.vove7.smartkey.android.AndroidSettings
-import cn.vove7.smartkey.android.noCacheKey
 import cn.vove7.smartkey.android.smartKey
 import cn.vove7.smartkey.annotation.Config
 import cn.vove7.smartkey.key.smartKeyList
@@ -18,7 +17,7 @@ import cn.vove7.smartkey.key.smartKeyList
 object AppConfig : AConfig() {
 
     //基本类型存储
-    var text: String by smartKey("a", keyId = R.string.key_text)
+    var text: String by smartKey("a", keyId = R.string.key_text, encrypt = true)
 
     //可空基础类型
     var nullableInt: Int? by smartKey(null)
@@ -35,7 +34,7 @@ object AppConfig : AConfig() {
 }
 
 data class UserInfo(
-        val name: String
+    val name: String
 )
 
 class ListModel(val s: String, val a: Int)

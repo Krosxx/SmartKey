@@ -133,7 +133,8 @@ abstract class IKey(
 @Suppress("UNCHECKED_CAST")
 fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean = false): T? {
 
-    if (key !in this) return defaultValue
+    val k = if (encrypt) AESEncryptor.encryptKey(key) else key
+    if (k !in this) return defaultValue
 
     return when (cls.let { if (it is Class<*>) it.simpleName else null }) {
         "Int", "Integer" -> {
@@ -143,7 +144,7 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean 
             getLong(key, (defaultValue as Long?) ?: 0L) as T
         }
         "String" -> {
-            val content = getString(key, (defaultValue as String?) ?: "")
+            val content = getString(k, (defaultValue as String?) ?: "")
             return (if (encrypt) AESEncryptor.decrypt(content)
             else content) as T
         }
@@ -158,9 +159,7 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean 
         }
         else -> {//数组, 实体类
             try {
-                val value = getString(
-                    if (encrypt) AESEncryptor.encryptKey(key) else key
-                ).let {
+                val value = getString(k).let {
                     if (encrypt) AESEncryptor.decrypt(it)
                     else it
                 }
@@ -175,8 +174,9 @@ fun <T> Settings.get(key: String, defaultValue: T?, cls: Type, encrypt: Boolean 
 }
 
 fun <T> Settings.set(key: String, value: T?, encrypt: Boolean = false) {
+    val k = if (encrypt) AESEncryptor.encryptKey(key) else key
     if (value == null) {
-        this -= key
+        this -= k
         return
     }
     when (value) {
@@ -189,7 +189,7 @@ fun <T> Settings.set(key: String, value: T?, encrypt: Boolean = false) {
         is String -> {
             val v = if (encrypt) AESEncryptor.encrypt(value)
             else value
-            putString(key, v)
+            putString(k, v)
         }
         is Float -> {
             putFloat(key, value)
@@ -198,14 +198,14 @@ fun <T> Settings.set(key: String, value: T?, encrypt: Boolean = false) {
             putDouble(key, value)
         }
         is Boolean -> {
-            putBoolean(key, value)
+            putBoolean(k, value)
         }
         else -> {//gson
             val content = value.toJson().let {
                 if (encrypt) AESEncryptor.encrypt(it)
                 else it
             }
-            putString(if (encrypt) AESEncryptor.encryptKey(key) else key, content)
+            putString(k, content)
         }
     }
 }
