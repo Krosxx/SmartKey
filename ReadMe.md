@@ -16,6 +16,7 @@
 - [基本存储实现](#基本存储实现)
 - [自定义持久化实现](#自定义持久化实现)
 - [引入SmartKey](#引入SmartKey)
+- [注意事项](#注意事项)
 
 ### 基本使用
 
@@ -268,6 +269,14 @@ dependencies {
 }
 ```
 > lastest_version : [![](https://jitpack.io/v/Vove7/SmartKey.svg)](https://jitpack.io/#Vove7/SmartKey)
+
+### 注意事项
+
+在开启混淆时，请注意添加规则保证Config正常。
+
+1. 由于类的持久化使用了Gson，请保证类字段名不被混淆，或使用注解@SerializedName
+2. 在没有指定key的config实例，例如 val a :Int by smaryKey(0)，由于没有指定key，会默认使用变量名作为key，请保证变量名不被混淆（本人未验证kotlin编译混淆后，property name是否被改变）
+
 
 ### TODO
 
