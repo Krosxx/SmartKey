@@ -31,6 +31,8 @@ object AppConfig : AConfig() {
 
     //实体数组
     var modelList: MutableList<ListModel> by smartKeyList()
+
+    var boolVar by smartKey(true)
 }
 
 data class UserInfo(

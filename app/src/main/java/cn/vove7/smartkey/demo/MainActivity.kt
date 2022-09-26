@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         val user2: UserInfo? = AppConfig["userInfo"]
         val user3: UserInfo? = AppConfig["userInfo", true]
 
+        Vog.i("boolVar: ${AppConfig.boolVar}")
 
 //        AppConfig["text"] = "234" //key, value
 
@@ -91,6 +92,10 @@ class MainActivity : AppCompatActivity() {
                 Vog.d("已无元素")
             }
             arr_text.text = AppConfig.intArr.contentToString()
+        }
+        switch_bool.setOnClickListener {
+            AppConfig.boolVar = !AppConfig.boolVar
+            Vog.i("boolVar: ${AppConfig.boolVar}")
         }
     }
 

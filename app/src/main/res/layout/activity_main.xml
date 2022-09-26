@@ -39,6 +39,13 @@
             android:onClick="clearAndReload"
             android:text="clear" />
 
+        <Button
+            android:id="@+id/switch_bool"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="clearAndReload"
+            android:text="switch_bool" />
+
     </LinearLayout>
 
     <TextView
