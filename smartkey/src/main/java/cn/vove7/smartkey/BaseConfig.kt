@@ -76,7 +76,7 @@ interface BaseConfig {
         set(key, value, encrypt)
     }
 
-    fun keys(): List<String> = settings.keys()
+    fun keys() = settings.keys()
 
 }
 /**
