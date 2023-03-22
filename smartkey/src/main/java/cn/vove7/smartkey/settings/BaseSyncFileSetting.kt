@@ -51,6 +51,8 @@ abstract class BaseSyncFileSetting : Settings {
     abstract fun putDouble_(key: String, value: Double)
     abstract fun putBoolean_(key: String, value: Boolean)
     abstract fun doClear()
+    abstract fun keys_(): Set<String>
+
 
     final override fun clear() {
         syncConfig()
@@ -94,5 +96,11 @@ abstract class BaseSyncFileSetting : Settings {
         syncConfig()
         return hasKey_(key)
     }
+
+    override fun keys(): Set<String> {
+        syncConfig()
+        return keys_()
+    }
+
 
 }
