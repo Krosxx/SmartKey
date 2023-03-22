@@ -33,7 +33,7 @@ abstract class BaseSyncFileSetting : Settings {
     /**
      * 同步文件配置到内存
      */
-    private fun syncConfig() {
+    protected fun syncConfig() {
         val cf = configFile
         val fl = cf.lastModified()
         if (fl > lastSync) {

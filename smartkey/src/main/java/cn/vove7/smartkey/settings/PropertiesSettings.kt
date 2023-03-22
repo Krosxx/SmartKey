@@ -27,6 +27,10 @@ class PropertiesSettings(private val configName: String) : BaseSyncFileSetting()
 
     private lateinit var properties: Properties
 
+    init {
+        syncConfig()
+    }
+
     override fun onReloadConfig(cf: File) {
         properties = Properties().apply {
             File(prefix).also {

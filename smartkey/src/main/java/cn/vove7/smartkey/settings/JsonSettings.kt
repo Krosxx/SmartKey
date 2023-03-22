@@ -36,6 +36,7 @@ class JsonSettings(configName: String) : BaseSyncFileSetting() {
                 mkdirs()
             }
         }
+        syncConfig()
     }
 
     override fun onReloadConfig(cf: File) {
