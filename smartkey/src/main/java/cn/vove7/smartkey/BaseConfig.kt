@@ -19,6 +19,7 @@ import com.russhwolf.settings.contains
 interface BaseConfig {
     //配置名
     val configName get() = this::class.java.simpleName!!.toLowerCase()
+
     //存储实现类
     val implCls get() = IKey.DEFAULT_SETTING_IMPL_CLS
 
@@ -74,6 +75,8 @@ interface BaseConfig {
     ) {
         set(key, value, encrypt)
     }
+
+    fun keys(): List<String> = settings.keys()
 
 }
 /**

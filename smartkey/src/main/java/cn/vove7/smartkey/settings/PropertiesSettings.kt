@@ -55,6 +55,7 @@ class PropertiesSettings(private val configName: String) : BaseSyncFileSetting()
 
     override fun hasKey_(key: String): Boolean = properties.containsKey(key)
 
+    override fun keys(): Set<String> = properties.keys.filterIsInstance<String>().toSet()
 
     override fun putInt_(key: String, value: Int) {
         properties[key] = value.toString()

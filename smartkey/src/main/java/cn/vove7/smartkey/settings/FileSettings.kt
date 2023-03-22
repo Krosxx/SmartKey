@@ -23,6 +23,12 @@ class FileSettings(val configName: String) : Settings {
         else configName
     }
 
+    override fun keys(): Set<String> {
+        return File(configDir).listFiles()?.filter {
+            it.isFile
+        }?.map { it.name }?.toSet() ?: emptySet()
+    }
+
     init {
         File(configName).apply {
             if (!exists()) mkdir()

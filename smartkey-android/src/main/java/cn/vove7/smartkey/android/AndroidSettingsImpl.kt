@@ -96,6 +96,8 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
         }.apply()
     }
 
+    override fun keys(): Set<String> = delegate.all.keys
+
     /**
      * Removes the value stored at [key].
      */

@@ -65,6 +65,8 @@ class JsonSettings(configName: String) : BaseSyncFileSetting() {
 
     override fun hasKey_(key: String): Boolean = key in map
 
+    override fun keys(): Set<String> = map.keys
+
     override fun putInt_(key: String, value: Int) {
         map[key] = value
     }

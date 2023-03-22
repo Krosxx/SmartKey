@@ -56,6 +56,11 @@ public interface Settings {
     public fun hasKey(key: String): Boolean
 
     /**
+     * Returns all keys for this setting
+     */
+    fun keys(): Set<String>
+
+    /**
      * Stores the `Int` [value] at [key].
      */
     public fun putInt(key: String, value: Int)
