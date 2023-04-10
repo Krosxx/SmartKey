@@ -30,6 +30,11 @@ abstract class BaseSyncFileSetting : Settings {
         lastSync = configFile.lastModified()
     }
 
+    override fun syncImmediately(): Boolean {
+        doSyncToFile()
+        return true
+    }
+
     /**
      * 同步文件配置到内存
      */

@@ -33,6 +33,10 @@ object AppConfig : AConfig() {
     var modelList: MutableList<ListModel> by smartKeyList()
 
     var boolVar by smartKey(true)
+
+    fun commit() {
+        (settings as AndroidSettings).syncImmediately()
+    }
 }
 
 data class UserInfo(

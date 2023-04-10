@@ -125,6 +125,8 @@ public interface Settings {
      * type was stored at `key`, the behavior is not defined.
      */
     public fun getBoolean(key: String, defaultValue: Boolean = false): Boolean
+
+    fun syncImmediately(): Boolean
 }
 
 /**

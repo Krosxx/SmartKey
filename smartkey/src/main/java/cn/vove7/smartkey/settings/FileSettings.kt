@@ -86,6 +86,10 @@ class FileSettings(val configName: String) : Settings {
         }
     }
 
+    override fun syncImmediately(): Boolean {
+        return true
+    }
+
     override fun putDouble(key: String, value: Double) {
         File(configDir, key).apply {
             if (!exists()) createNewFile()

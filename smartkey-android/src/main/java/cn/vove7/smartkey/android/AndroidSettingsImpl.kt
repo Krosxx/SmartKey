@@ -16,6 +16,7 @@
 
 package cn.vove7.smartkey.android
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
@@ -45,7 +46,8 @@ import com.russhwolf.settings.SettingsListener
  * delegate. Thus two `Settings` instances created using the same [delegate] will be backed by the same data.
  */
 @UseExperimental(ExperimentalListener::class)
-internal class AndroidSettingsImpl public constructor(context: Context, name: String) : ObservableSettings {
+internal class AndroidSettingsImpl public constructor(context: Context, name: String) :
+    ObservableSettings {
     private val delegate: SharedPreferences = context.getSharedPreferences(name, MODE_PRIVATE)
 
     /**
@@ -96,6 +98,11 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
         }.apply()
     }
 
+    @SuppressLint("ApplySharedPref")
+    fun commit(): Boolean {
+        return delegate.edit().commit()
+    }
+
     override fun keys(): Set<String> = delegate.all.keys
 
     /**
@@ -111,24 +118,28 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
     /**
      * Stores the `Int` [value] at [key].
      */
-    public override fun putInt(key: String, value: Int): Unit = delegate.edit().putInt(key, value).apply()
+    public override fun putInt(key: String, value: Int): Unit =
+        delegate.edit().putInt(key, value).apply()
 
     /**
      * Returns the `Int` value stored at [key], or [defaultValue] if no value was stored. If a value of a different
      * type was stored at `key`, the behavior is not defined.
      */
-    public override fun getInt(key: String, defaultValue: Int): Int = delegate.getInt(key, defaultValue)
+    public override fun getInt(key: String, defaultValue: Int): Int =
+        delegate.getInt(key, defaultValue)
 
     /**
      * Stores the `Long` [value] at [key].
      */
-    public override fun putLong(key: String, value: Long): Unit = delegate.edit().putLong(key, value).apply()
+    public override fun putLong(key: String, value: Long): Unit =
+        delegate.edit().putLong(key, value).apply()
 
     /**
      * Returns the `Long` value stored at [key], or [defaultValue] if no value was stored. If a value of a different
      * type was stored at `key`, the behavior is not defined.
      */
-    public override fun getLong(key: String, defaultValue: Long): Long = delegate.getLong(key, defaultValue)
+    public override fun getLong(key: String, defaultValue: Long): Long =
+        delegate.getLong(key, defaultValue)
 
     /**
      * Stores the `String` [value] at [key].
@@ -146,13 +157,15 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
     /**
      * Stores the `Float` [value] at [key].
      */
-    public override fun putFloat(key: String, value: Float): Unit = delegate.edit().putFloat(key, value).apply()
+    public override fun putFloat(key: String, value: Float): Unit =
+        delegate.edit().putFloat(key, value).apply()
 
     /**
      * Returns the `Float` value stored at [key], or [defaultValue] if no value was stored. If a value of a different
      * type was stored at `key`, the behavior is not defined.
      */
-    public override fun getFloat(key: String, defaultValue: Float): Float = delegate.getFloat(key, defaultValue)
+    public override fun getFloat(key: String, defaultValue: Float): Float =
+        delegate.getFloat(key, defaultValue)
 
     /**
      * Stores the `Double` [value] at [key].
@@ -179,6 +192,9 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
      */
     public override fun getBoolean(key: String, defaultValue: Boolean): Boolean =
         delegate.getBoolean(key, defaultValue)
+
+    override fun syncImmediately() = commit()
+
 
     /**
      * Adds a listener which will call the supplied [callback] anytime the value at [key] changes. A [Listener]
@@ -232,7 +248,7 @@ internal class AndroidSettingsImpl public constructor(context: Context, name: St
      */
     @ExperimentalListener
     public class Listener internal constructor(
-            internal val delegate: SharedPreferences.OnSharedPreferenceChangeListener
+        internal val delegate: SharedPreferences.OnSharedPreferenceChangeListener
     ) : SettingsListener {
         internal class Cache(var value: Any?)
     }
